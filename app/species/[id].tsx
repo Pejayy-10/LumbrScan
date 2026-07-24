@@ -1,6 +1,6 @@
 // LumbrScan Detailed Species Classification & Legal Regulatory View Screen
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,18 +9,29 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SPECIES_DICTIONARY, FPRDI_RATINGS, DENR_BADGES } from '../../constants/domain';
 import { FprdiBadge } from '../../components/ui/FprdiBadge';
 import { DenrBadge } from '../../components/ui/DenrBadge';
+import { ConfidenceGauge } from '../../components/ui/ConfidenceGauge';
+import { DenrPermitModal } from '../../components/modules/knowledge/DenrPermitModal';
+import { useScanStore } from '../../stores/useScanStore';
 
 export default function SpeciesDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const [isPermitModalOpen, setIsPermitModalOpen] = useState(false);
+
+  const activeResult = useScanStore((state) => state.activeResult);
 
   const species = (id && SPECIES_DICTIONARY[id as string]) || SPECIES_DICTIONARY.apitong;
   const fprdi = FPRDI_RATINGS[species.fprdiGroup];
   const denr = DENR_BADGES[species.denrStatus];
+
+  const confidenceScore =
+    activeResult?.prediction?.primaryMatch?.id === species.id
+      ? activeResult.prediction.primaryMatch.confidenceScore
+      : 0.942;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -39,11 +50,25 @@ export default function SpeciesDetailScreen() {
         <Text style={styles.localName}>Local Name: {species.localName}</Text>
       </View>
 
-      {/* 2. DENR DAO 2026-20 Legal Regulatory Shield */}
+      {/* 2. Animated AI Prediction Confidence Gauge */}
+      <ConfidenceGauge confidenceScore={confidenceScore} speciesName={species.commonName} />
+
+      {/* 3. DENR DAO 2026-20 Legal Regulatory Shield */}
       <Text style={styles.sectionHeader}>DENR Legal Regulatory Status</Text>
       <DenrBadge statusCode={species.denrStatus} showNotice={true} />
 
-      {/* 3. FPRDI Structural Engineering Properties */}
+      <TouchableOpacity
+        style={styles.permitGuideBtn}
+        onPress={() => setIsPermitModalOpen(true)}
+        activeOpacity={0.8}
+      >
+        <MaterialCommunityIcons name="file-document-outline" size={18} color="#D97706" />
+        <Text style={styles.permitGuideBtnText}>
+          View DENR Permit & CTO Application Workflow
+        </Text>
+      </TouchableOpacity>
+
+      {/* 4. FPRDI Structural Engineering Properties */}
       <Text style={styles.sectionHeader}>FPRDI Structural Rating</Text>
       <View style={styles.fprdiCard}>
         <FprdiBadge groupCode={species.fprdiGroup} size="lg" />
@@ -66,13 +91,13 @@ export default function SpeciesDetailScreen() {
         </View>
       </View>
 
-      {/* 4. Grain & Texture Characteristics */}
+      {/* 5. Grain & Texture Characteristics */}
       <Text style={styles.sectionHeader}>Grain & Visual Texture</Text>
       <View style={styles.infoCard}>
         <Text style={styles.infoText}>{species.grainCharacteristics}</Text>
       </View>
 
-      {/* 5. Permissible Construction Applications */}
+      {/* 6. Permissible Construction Applications */}
       <Text style={styles.sectionHeader}>Primary Construction Uses</Text>
       <View style={styles.usesCard}>
         {species.primaryUses.map((use, index) => (
@@ -91,6 +116,14 @@ export default function SpeciesDetailScreen() {
         <Ionicons name="swap-horizontal" size={20} color="#0F172A" />
         <Text style={styles.recommenderCtaText}>Test in Two-Way Recommender</Text>
       </TouchableOpacity>
+
+      {/* DENR Permit Guide Modal */}
+      <DenrPermitModal
+        visible={isPermitModalOpen}
+        onClose={() => setIsPermitModalOpen(false)}
+        statusCode={species.denrStatus}
+        speciesName={species.commonName}
+      />
     </ScrollView>
   );
 }
@@ -148,6 +181,24 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 14,
     marginBottom: 8,
+  },
+  permitGuideBtn: {
+    backgroundColor: '#1E293B',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D97706',
+    marginTop: 10,
+    marginBottom: 10,
+    gap: 8,
+  },
+  permitGuideBtnText: {
+    color: '#D97706',
+    fontSize: 13,
+    fontWeight: '700',
   },
   fprdiCard: {
     backgroundColor: '#1E293B',
