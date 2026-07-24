@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LumbrScan Mock API Contract Schema",
+  "description": "Exhaustive JSON REST contract for LumbrScan Dual-Backbone AI Classification & Two-Way Decision Support Engine.",
+  "endpoints": {
+    "/api/v1/predict": {
+      "method": "POST",
+      "requestPayload": {
+        "image": {
+          "base64OrUri": "file:///data/user/0/ph.lumbrscan.app/cache/scan_224x224_001.jpg",
+          "aspectRatio": "1:1",
+          "targetWidth": 224,
+          "targetHeight": 224,
+          "modalityType": "TRANSVERSAL_CROSS_SECTION"
+        },
+        "conditionAssessment": {
+          "hasDecayOrRot": true,
+          "hasEndSplitting": false,
+          "hasWarping": false,
+          "hasUnsoundKnots": true,
+          "hasInsectBoreholes": false,
+          "defectSeverity": "MODERATE"
+        },
+        "userPreferences": {
+          "desiredApplication": "ROOF_TRUSS_RAFTER",
+          "budgetTier": "MEDIUM"
+        }
+      },
+      "responsePayload": {
+        "status": "SUCCESS",
+        "timestamp": "2026-07-25T00:15:00Z",
+        "processingTimeMs": 680,
+        "prediction": {
+          "primaryMatch": {
+            "id": "apitong_004",
+            "commonName": "Apitong",
+            "botanicalName": "Dipterocarpus grandiflorus",
+            "localName": "Apitong",
+            "category": "NATIVE_REGULATED_HARDWOOD",
+            "confidenceScore": 0.942,
+            "grainCharacteristics": "Straight to coarse interlocked grain; reddish-brown hue; resinous pores.",
+            "visualTexture": "COARSE_INTERLOCKED"
+          },
+          "alternativeMatches": [
+            {
+              "id": "white_lauan_005",
+              "commonName": "White Lauan",
+              "botanicalName": "Shorea contorta",
+              "confidenceScore": 0.043
+            },
+            {
+              "id": "ipil_002",
+              "commonName": "Ipil",
+              "botanicalName": "Intsia bijuga",
+              "confidenceScore": 0.012
+            }
+          ]
+        },
+        "knowledgeBase": {
+          "fprdiStrengthGroup": {
+            "groupCode": "GROUP_II",
+            "title": "Group II (High Strength)",
+            "bendingStressMpa": "65.0 - 85.0 MPa",
+            "modulusOfElasticityGpa": "11.0 - 13.5 GPa",
+            "loadCapacityTier": "HIGH",
+            "nominalDurability": "HIGH_OUTDOOR_RESISTANT"
+          },
+          "denrRegulatoryStatus": {
+            "statusCode": "REGULATED_PERMIT_REQUIRED",
+            "badgeTitle": "COMMERCIAL NATIVE HARDWOOD - PERMIT REQUIRED",
+            "badgeColorHex": "#DC2626",
+            "requiresCuttingPermit": true,
+            "requiresTransportPermit": true,
+            "governingLaw": "DENR Administrative Order No. 2026-20 & PD 705 (Revised Forestry Code)",
+            "legalWarningNotice": "Mandatory Certificate of Timber Origin (CTO) and DENR transport permits are required prior to hauling or construction installation."
+          }
+        },
+        "conditionEvaluation": {
+          "assessedDefects": [
+            {
+              "defectType": "DECAY_ROT",
+              "label": "Decay / Fungal Rot Present",
+              "severity": "MODERATE",
+              "strengthDowngradePenalty": -1
+            },
+            {
+              "defectType": "UNSOUND_KNOTS",
+              "label": "Unsound Loose Knots Present",
+              "severity": "LOW",
+              "strengthDowngradePenalty": 0
+            }
+          ],
+          "originalFprdiGroup": "GROUP_II",
+          "effectiveFprdiGroup": "GROUP_III",
+          "conditionWarningSummary": "Fungal decay reduces structural bending strength. Material downgraded from Group II to Group III."
+        },
+        "twoWayRecommendation": {
+          "materialToTask": {
+            "speciesName": "Apitong (with Moderate Decay)",
+            "permissibleApplications": [
+              {
+                "applicationCode": "INTERIOR_WALL_STUDS",
+                "title": "Interior Light Wall Framing",
+                "safetyRating": "SAFE",
+                "rationale": "Sufficient strength for non-load bearing interior studs despite Group III downgrade."
+              },
+              {
+                "applicationCode": "TEMPORARY_FORMWORK",
+                "title": "Concrete Formwork Bracing",
+                "safetyRating": "PERMISSIBLE_WITH_CAUTION",
+                "rationale": "Permissible for temporary bracing; inspect decay zones before load application."
+              }
+            ],
+            "prohibitedApplications": [
+              {
+                "applicationCode": "HEAVY_STRUCTURAL_BEAM",
+                "title": "Heavy Post & Bridge Foundation Beams",
+                "safetyRating": "PROHIBITED_UNSAFE",
+                "rationale": "UNSAFE: Fungal rot severely degrades shear resistance under continuous heavy loads."
+              },
+              {
+                "applicationCode": "ROOF_TRUSS_RAFTER",
+                "title": "Primary Roof Trusses & Load-Bearing Rafters",
+                "safetyRating": "HIGH_RISK_NOT_RECOMMENDED",
+                "rationale": "NOT RECOMMENDED: Truss tension members require defect-free Group II structural grade."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/recommend": {
+      "method": "POST",
+      "requestPayload": {
+        "recommendationMode": "TASK_TO_MATERIAL",
+        "taskParameters": {
+          "desiredApplication": "HEAVY_STRUCTURAL_BEAM",
+          "minimumFprdiGroup": "GROUP_I",
+          "budgetConstraint": "HIGH",
+          "mustBeDenrExempt": false
+        }
+      },
+      "responsePayload": {
+        "status": "SUCCESS",
+        "timestamp": "2026-07-25T00:15:05Z",
+        "recommendationMode": "TASK_TO_MATERIAL",
+        "targetApplication": {
+          "code": "HEAVY_STRUCTURAL_BEAM",
+          "title": "Heavy Structural Posts & Foundation Beams",
+          "requiredFprdiGroup": "GROUP_I"
+        },
+        "recommendedSpeciesList": [
+          {
+            "rank": 1,
+            "id": "molave_003",
+            "commonName": "Molave",
+            "botanicalName": "Vitex parviflora",
+            "fprdiGroup": "GROUP_I",
+            "denrStatus": "REGULATED_PERMIT_REQUIRED",
+            "suitabilityScore": 0.98,
+            "keyAdvantages": "Exceptional resistance to weather and soil decay; highest structural load capacity.",
+            "estimatedCostTier": "HIGH"
+          },
+          {
+            "rank": 2,
+            "id": "yakal_006",
+            "commonName": "Yakal",
+            "botanicalName": "Shorea astylosa",
+            "fprdiGroup": "GROUP_I",
+            "denrStatus": "CRITICALLY_ENDANGERED_PERMIT_REQUIRED",
+            "suitabilityScore": 0.95,
+            "keyAdvantages": "Extreme bending stress tolerance (>85 MPa); ideal for heavy roof trusses and bridge piles.",
+            "estimatedCostTier": "VERY_HIGH"
+          }
+        ]
+      }
+    }
+  }
+}
