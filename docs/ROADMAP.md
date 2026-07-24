@@ -53,9 +53,9 @@
 - [ ] **Live Downgrade Computation:** Real-time visual feedback showing structural downgrade (e.g. Group II ➔ Group III) as user checks defect boxes.
 - [ ] **Photo Defect Annotator:** Interactive bounding box overlay on captured wood image to mark rot/crack regions.
 
-### 📌 Sprint 3: Micro-Animations & DENR Permit Application Guide
-- [ ] **Confidence Score Gauge:** Animated confidence percentage bar on species match cards.
-- [ ] **DENR Permit Step-by-Step Modal:** Interactive guide explaining how contractors apply for Tree Cutting Permits & CTOs.
+### 📌 Sprint 3: Micro-Animations & DENR Permit Application Guide (COMPLETED)
+- [x] **Confidence Score Gauge:** Animated confidence percentage bar on species match cards (`components/ui/ConfidenceGauge.tsx`).
+- [x] **DENR Permit Step-by-Step Modal:** Interactive guide explaining how contractors apply for Tree Cutting Permits & CTOs under DENR DAO 2026-20 (`components/modules/knowledge/DenrPermitModal.tsx`).
 
 ### 📌 Sprint 4: Exportable Decision Support Report
 - [ ] **Field PDF/Print Summary:** Generate downloadable/shareable summary report of structural timber recommendations for construction clients.
