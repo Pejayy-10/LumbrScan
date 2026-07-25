@@ -24,7 +24,7 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
   }, [confidenceScore]);
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.85) return '#059669'; // Emerald High Confidence
+    if (score >= 0.85) return '#10B981'; // Emerald High Confidence
     if (score >= 0.65) return '#D97706'; // Amber Moderate
     return '#DC2626'; // Red Low
   };
@@ -62,12 +62,15 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderRadius: 16,
     marginBottom: 16,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   headerRow: {
     flexDirection: 'row',
@@ -76,17 +79,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    color: '#F8FAFC',
+    color: '#1B4332',
     fontSize: 14,
     fontWeight: '700',
   },
   percentageText: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '800',
   },
   track: {
     height: 10,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#E8F2ED',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,
@@ -96,11 +99,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   footerNote: {
-    color: '#94A3B8',
+    color: '#52796F',
     fontSize: 12,
   },
   boldText: {
-    color: '#F8FAFC',
+    color: '#1B4332',
     fontWeight: '700',
   },
 });

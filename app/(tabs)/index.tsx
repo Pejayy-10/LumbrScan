@@ -1,4 +1,4 @@
-// LumbrScan Main Dashboard (Home Screen)
+// LumbrScan Main Dashboard — Light Nature Theme
 
 import React from 'react';
 import {
@@ -9,122 +9,156 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPECIES_DICTIONARY } from '../../constants/domain';
 import { FprdiBadge } from '../../components/ui/FprdiBadge';
 
 export default function HomeScreen() {
   const router = useRouter();
-
+  const insets = useSafeAreaInsets();
   const speciesList = Object.values(SPECIES_DICTIONARY);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* 1. Academic Thesis Header Banner */}
-      <View style={styles.banner}>
-        <View style={styles.bannerBadge}>
-          <Text style={styles.bannerBadgeText}>PHILIPPINE TIMBER DECISION SUPPORT</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: insets.top + 16, paddingBottom: 120 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Greeting Header ── */}
+      <View style={styles.greetingRow}>
+        <View>
+          <Text style={styles.greeting}>Good day! 🌿</Text>
+          <Text style={styles.appTitle}>LumbrScan</Text>
         </View>
-        <Text style={styles.bannerTitle}>LumbrScan Mobile</Text>
-        <Text style={styles.bannerSubtitle}>
-          AI Species Identification • Physical Condition Assessment • FPRDI & DENR Compliance
-        </Text>
+        <View style={styles.headerIcon}>
+          <MaterialCommunityIcons name="leaf" size={22} color="#2D6A4F" />
+        </View>
+      </View>
+      <Text style={styles.appSubtitle}>
+        Philippine Timber Identification & Decision Support
+      </Text>
 
+      {/* ── Hero Card ── */}
+      <View style={styles.heroCard}>
+        <View style={styles.heroBadge}>
+          <Text style={styles.heroBadgeText}>FPRDI · DENR DAO 2026-20</Text>
+        </View>
+        <Text style={styles.heroTitle}>Start Your Timber Scan</Text>
+        <Text style={styles.heroSubtitle}>
+          AI-powered identification of 11 Philippine timber species with structural
+          condition assessment.
+        </Text>
         <TouchableOpacity
-          style={styles.primaryCta}
+          style={styles.heroCta}
           onPress={() => router.push('/scan')}
           activeOpacity={0.85}
         >
-          <MaterialCommunityIcons name="camera-iris" size={22} color="#0F172A" />
-          <Text style={styles.primaryCtaText}>Start Timber Scan</Text>
+          <Ionicons name="camera" size={18} color="#1B4332" />
+          <Text style={styles.heroCtaText}>Open Camera & Scan</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 2. Quick Action Grid */}
-      <Text style={styles.sectionHeader}>Quick Actions</Text>
+      {/* ── Quick Actions ── */}
+      <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.quickGrid}>
         <TouchableOpacity
           style={styles.quickCard}
-          onPress={() => router.push('/scan')}
+          onPress={() => router.push('/knowledge')}
+          activeOpacity={0.85}
         >
-          <View style={[styles.quickIconBg, { backgroundColor: '#D9770622' }]}>
-            <MaterialCommunityIcons name="scan-helper" size={24} color="#D97706" />
+          <View style={[styles.quickIcon, { backgroundColor: '#EEF9F4' }]}>
+            <Ionicons name="library" size={22} color="#2D6A4F" />
           </View>
-          <Text style={styles.quickCardTitle}>Scan Wood Grain</Text>
-          <Text style={styles.quickCardSub}>Image & Defect Entry</Text>
+          <Text style={styles.quickTitle}>Species Catalog</Text>
+          <Text style={styles.quickSub}>11 Target Species</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.quickCard}
           onPress={() => router.push('/recommend')}
+          activeOpacity={0.85}
         >
-          <View style={[styles.quickIconBg, { backgroundColor: '#05966922' }]}>
-            <MaterialCommunityIcons name="swap-horizontal-bold" size={24} color="#059669" />
+          <View style={[styles.quickIcon, { backgroundColor: '#FEF6E4' }]}>
+            <Ionicons name="bulb" size={22} color="#D97706" />
           </View>
-          <Text style={styles.quickCardTitle}>Recommender</Text>
-          <Text style={styles.quickCardSub}>Task & Material Engine</Text>
+          <Text style={styles.quickTitle}>Recommender</Text>
+          <Text style={styles.quickSub}>Task & Material Engine</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 3. 4-Phase System Pipeline Overview Card */}
+      {/* ── 4-Phase Pipeline ── */}
       <View style={styles.card}>
-        <View style={styles.cardHeaderRow}>
-          <Ionicons name="git-network-outline" size={20} color="#D97706" />
+        <View style={styles.cardHeader}>
+          <View style={styles.cardHeaderIcon}>
+            <Ionicons name="git-network-outline" size={18} color="#2D6A4F" />
+          </View>
           <Text style={styles.cardTitle}>4-Phase Decision Pipeline</Text>
         </View>
 
-        <View style={styles.pipelineStep}>
-          <Text style={styles.stepNum}>01</Text>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Input & Condition Assessment</Text>
-            <Text style={styles.stepDesc}>224x224 RGB image capture + defect checklist (rot, cracks, warping).</Text>
+        {[
+          {
+            num: '01',
+            title: 'Input & Condition Assessment',
+            desc: '224×224 RGB image capture + defect checklist (rot, cracks, warping).',
+          },
+          {
+            num: '02',
+            title: 'Dual-Backbone AI Engine',
+            desc: 'ResNet-50 + EfficientNet-B4 feature fusion species prediction.',
+          },
+          {
+            num: '03',
+            title: 'Knowledge Base Evaluation',
+            desc: 'FPRDI Groups I–IV rating & DENR DAO 2026-20 permit badges.',
+          },
+          {
+            num: '04',
+            title: 'Two-Way Recommendation',
+            desc: 'Task-to-Material & Material-to-Task engineering advice cards.',
+          },
+        ].map((step) => (
+          <View key={step.num} style={styles.pipelineRow}>
+            <View style={styles.stepNumBox}>
+              <Text style={styles.stepNum}>{step.num}</Text>
+            </View>
+            <View style={styles.stepBody}>
+              <Text style={styles.stepTitle}>{step.title}</Text>
+              <Text style={styles.stepDesc}>{step.desc}</Text>
+            </View>
           </View>
-        </View>
-
-        <View style={styles.pipelineStep}>
-          <Text style={styles.stepNum}>02</Text>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Dual-Backbone AI Engine</Text>
-            <Text style={styles.stepDesc}>ResNet-50 + EfficientNet-B4 feature fusion species prediction.</Text>
-          </View>
-        </View>
-
-        <View style={styles.pipelineStep}>
-          <Text style={styles.stepNum}>03</Text>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Knowledge Base Evaluation</Text>
-            <Text style={styles.stepDesc}>FPRDI Groups I-IV rating & DENR DAO 2026-20 permit badges.</Text>
-          </View>
-        </View>
-
-        <View style={styles.pipelineStep}>
-          <Text style={styles.stepNum}>04</Text>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Two-Way Recommendation</Text>
-            <Text style={styles.stepDesc}>Task-to-Material & Material-to-Task engineering advice cards.</Text>
-          </View>
-        </View>
+        ))}
       </View>
 
-      {/* 4. Target Species Catalog Preview */}
-      <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionHeader}>11 Target Philippine Species</Text>
+      {/* ── Species Preview ── */}
+      <View style={styles.sectionRow}>
+        <Text style={styles.sectionTitle}>Target Species</Text>
         <TouchableOpacity onPress={() => router.push('/knowledge')}>
-          <Text style={styles.seeAllText}>View Catalog →</Text>
+          <Text style={styles.seeAll}>View All →</Text>
         </TouchableOpacity>
       </View>
 
       {speciesList.slice(0, 4).map((item) => (
         <TouchableOpacity
           key={item.id}
-          style={styles.speciesCard}
+          style={styles.speciesRow}
           onPress={() => router.push(`/species/${item.id}`)}
+          activeOpacity={0.85}
         >
-          <View style={styles.speciesCardLeft}>
-            <Text style={styles.speciesName}>{item.commonName}</Text>
-            <Text style={styles.botanicalName}>{item.botanicalName}</Text>
+          <View style={styles.speciesLeft}>
+            <View style={styles.speciesDot} />
+            <View>
+              <Text style={styles.speciesName}>{item.commonName}</Text>
+              <Text style={styles.speciesBotanical}>{item.botanicalName}</Text>
+            </View>
           </View>
-          <FprdiBadge groupCode={item.fprdiGroup} size="sm" />
+          <View style={styles.speciesRight}>
+            <FprdiBadge groupCode={item.fprdiGroup} size="sm" />
+            <Ionicons name="chevron-forward" size={16} color="#95A99E" />
+          </View>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -134,174 +168,255 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F4F8F5',
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    paddingHorizontal: 20,
   },
-  banner: {
-    backgroundColor: '#1E293B',
-    padding: 20,
-    borderRadius: 16,
+  greetingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 2,
+  },
+  greeting: {
+    fontSize: 15,
+    color: '#52796F',
+    fontWeight: '500',
+  },
+  appTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1B4332',
+    letterSpacing: -0.5,
+  },
+  headerIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#EEF9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#D1EEE3',
+  },
+  appSubtitle: {
+    fontSize: 13,
+    color: '#52796F',
     marginBottom: 20,
+    lineHeight: 18,
   },
-  bannerBadge: {
-    backgroundColor: '#D9770622',
-    paddingHorizontal: 8,
+  heroCard: {
+    backgroundColor: '#1B4332',
+    borderRadius: 20,
+    padding: 22,
+    marginBottom: 24,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  heroBadge: {
+    backgroundColor: 'rgba(116,198,157,0.2)',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 20,
     alignSelf: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(116,198,157,0.35)',
   },
-  bannerBadgeText: {
-    color: '#D97706',
+  heroBadgeText: {
+    color: '#74C69D',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
   },
-  bannerTitle: {
-    color: '#F8FAFC',
-    fontSize: 24,
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 22,
     fontWeight: '800',
-    marginBottom: 4,
+    marginBottom: 8,
+    letterSpacing: -0.3,
   },
-  bannerSubtitle: {
-    color: '#94A3B8',
+  heroSubtitle: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 16,
+    lineHeight: 19,
+    marginBottom: 18,
   },
-  primaryCta: {
-    backgroundColor: '#D97706',
+  heroCta: {
+    backgroundColor: '#74C69D',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 13,
     borderRadius: 12,
     gap: 8,
   },
-  primaryCtaText: {
-    color: '#0F172A',
-    fontSize: 15,
+  heroCtaText: {
+    color: '#1B4332',
+    fontSize: 14,
     fontWeight: '800',
   },
-  sectionHeader: {
-    color: '#F8FAFC',
-    fontSize: 17,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: '700',
+    color: '#1B4332',
     marginBottom: 12,
   },
-  sectionHeaderRow: {
+  sectionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
     marginBottom: 12,
   },
-  seeAllText: {
-    color: '#D97706',
+  seeAll: {
+    color: '#2D6A4F',
     fontSize: 13,
     fontWeight: '700',
   },
   quickGrid: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 20,
+    marginBottom: 24,
   },
   quickCard: {
     flex: 1,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderRadius: 16,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  quickIconBg: {
+  quickIcon: {
     width: 44,
     height: 44,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
   },
-  quickCardTitle: {
-    color: '#F8FAFC',
+  quickTitle: {
     fontSize: 14,
+    fontWeight: '700',
+    color: '#1B4332',
+    marginBottom: 2,
+  },
+  quickSub: {
+    fontSize: 11,
+    color: '#52796F',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    padding: 18,
+    borderRadius: 18,
+    marginBottom: 24,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 16,
+  },
+  cardHeaderIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: '#EEF9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1B4332',
+  },
+  pipelineRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
+    alignItems: 'flex-start',
+  },
+  stepNumBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: '#EEF9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#D1EEE3',
+  },
+  stepNum: {
+    color: '#2D6A4F',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  stepBody: {
+    flex: 1,
+    paddingTop: 4,
+  },
+  stepTitle: {
+    color: '#1B4332',
+    fontSize: 13,
     fontWeight: '700',
     marginBottom: 2,
   },
-  quickCardSub: {
-    color: '#94A3B8',
-    fontSize: 11,
-  },
-  card: {
-    backgroundColor: '#1E293B',
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
-    marginBottom: 20,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 14,
-  },
-  cardTitle: {
-    color: '#F8FAFC',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  pipelineStep: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    gap: 12,
-  },
-  stepNum: {
-    color: '#D97706',
-    fontSize: 13,
-    fontWeight: '800',
-    width: 24,
-  },
-  stepContent: {
-    flex: 1,
-  },
-  stepTitle: {
-    color: '#F8FAFC',
-    fontSize: 13,
-    fontWeight: '700',
-  },
   stepDesc: {
-    color: '#94A3B8',
+    color: '#52796F',
     fontSize: 12,
     lineHeight: 16,
   },
-  speciesCard: {
-    backgroundColor: '#1E293B',
+  speciesRow: {
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 14,
     marginBottom: 8,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  speciesCardLeft: {
+  speciesLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     flex: 1,
   },
+  speciesDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#40916C',
+  },
   speciesName: {
-    color: '#F8FAFC',
     fontSize: 15,
     fontWeight: '700',
+    color: '#1B4332',
   },
-  botanicalName: {
-    color: '#94A3B8',
+  speciesBotanical: {
     fontSize: 12,
+    color: '#52796F',
     fontStyle: 'italic',
+  },
+  speciesRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
 });

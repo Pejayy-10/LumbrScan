@@ -1,6 +1,7 @@
 // LumbrScan Module 1 & Module 5: Image Preprocessing & Physical Condition Assessment Screen
+// Light Nature Theme
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -14,12 +15,14 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useScanStore } from '../../stores/useScanStore';
 import { useConditionStore } from '../../stores/useConditionStore';
 import { ModalityType, SeverityLevel } from '../../types';
 
 export default function ScanScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const {
     imageUri,
@@ -54,7 +57,7 @@ export default function ScanScreen() {
   const sampleEffectiveGroup = getEffectiveFprdiGroup('GROUP_II');
 
   // ---------------------------------------------------------------------------
-  // IMAGE PICKER HANDLERS (CAMERA & GALLERY)
+  // IMAGE PICKER HANDLERS (SDK 54 API — MediaType array)
   // ---------------------------------------------------------------------------
   const handleTakePhoto = async () => {
     try {
@@ -68,9 +71,9 @@ export default function ScanScreen() {
       }
 
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
-        aspect: [1, 1], // Strict 1:1 Aspect ratio for 224x224 RGB CNN tensor
+        aspect: [1, 1],
         quality: 0.8,
       });
 
@@ -96,7 +99,7 @@ export default function ScanScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -126,68 +129,123 @@ export default function ScanScreen() {
 
   const displayUri = croppedUri || imageUri;
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* 1. MODULE 1: IMAGE CAPTURE & 224x224 PREPROCESSING VIEW */}
-      <Text style={styles.sectionHeader}>Module 1: Preprocessing & Crop</Text>
+  const defects = [
+    {
+      label: 'Decay / Fungal Rot',
+      desc: 'Softened fibers (−2 FPRDI Group)',
+      value: hasDecayOrRot,
+      toggle: toggleDecayOrRot,
+      danger: true,
+    },
+    {
+      label: 'End Splitting / Cracks',
+      desc: 'Separation along grain ends',
+      value: hasEndSplitting,
+      toggle: toggleEndSplitting,
+      danger: false,
+    },
+    {
+      label: 'Warping / Bowing',
+      desc: 'Dimensional curvature distortion',
+      value: hasWarping,
+      toggle: toggleWarping,
+      danger: false,
+    },
+    {
+      label: 'Unsound Loose Knots',
+      desc: 'Decayed or loose knot holes',
+      value: hasUnsoundKnots,
+      toggle: toggleUnsoundKnots,
+      danger: false,
+    },
+    {
+      label: 'Insect Boreholes',
+      desc: 'Termite or beetle damage galleries',
+      value: hasInsectBoreholes,
+      toggle: toggleInsectBoreholes,
+      danger: false,
+    },
+  ];
 
-      <View style={styles.previewCard}>
-        {/* 224x224 Square Frame */}
-        <View style={styles.cropOverlay}>
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: insets.top + 16, paddingBottom: 120 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Page Header ── */}
+      <Text style={styles.pageTitle}>Timber Scan</Text>
+      <Text style={styles.pageSubtitle}>
+        Capture or select a timber image to classify and assess.
+      </Text>
+
+      {/* ── Module 1: Image Capture ── */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View style={[styles.cardBadge, { backgroundColor: '#EEF9F4' }]}>
+            <Text style={[styles.cardBadgeText, { color: '#2D6A4F' }]}>MODULE 1</Text>
+          </View>
+          <Text style={styles.cardTitle}>Image Preprocessing & Crop</Text>
+        </View>
+
+        {/* 224×224 Square Frame */}
+        <View style={styles.cropFrame}>
           {displayUri ? (
             <Image source={{ uri: displayUri }} style={styles.capturedImage} resizeMode="cover" />
           ) : (
             <View style={styles.emptyPlaceholder}>
-              <MaterialCommunityIcons name="crop-free" size={36} color="#D97706" />
-              <Text style={styles.cropGridText}>224 x 224 RGB Crop Target</Text>
-              <Text style={styles.cropSubText}>Tap below to capture or select wood photo</Text>
+              <View style={styles.cameraIconWrap}>
+                <Ionicons name="camera-outline" size={32} color="#40916C" />
+              </View>
+              <Text style={styles.cropLabel}>224 × 224 RGB Crop Target</Text>
+              <Text style={styles.cropHint}>Tap below to capture or select a timber photo</Text>
             </View>
           )}
         </View>
 
         {/* Camera / Gallery Buttons */}
-        <View style={styles.pickerButtonRow}>
+        <View style={styles.pickerRow}>
           <TouchableOpacity
-            style={styles.pickerBtnPrimary}
+            style={styles.btnPrimary}
             onPress={handleTakePhoto}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
-            <Ionicons name="camera" size={18} color="#0F172A" />
-            <Text style={styles.pickerBtnPrimaryText}>Take Photo</Text>
+            <Ionicons name="camera" size={17} color="#FFFFFF" />
+            <Text style={styles.btnPrimaryText}>Take Photo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.pickerBtnSecondary}
+            style={styles.btnSecondary}
             onPress={handlePickFromGallery}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
-            <Ionicons name="images" size={18} color="#F8FAFC" />
-            <Text style={styles.pickerBtnSecondaryText}>Choose Gallery</Text>
+            <Ionicons name="images-outline" size={17} color="#2D6A4F" />
+            <Text style={styles.btnSecondaryText}>Gallery</Text>
           </TouchableOpacity>
         </View>
 
         {/* Modality Selector */}
-        <Text style={styles.modalityHeader}>Target Timber Modality:</Text>
-        <View style={styles.modalityRow}>
+        <Text style={styles.subLabel}>Target Timber Modality</Text>
+        <View style={styles.pillRow}>
           {(
             [
-              { type: 'TRANSVERSAL_CROSS_SECTION', label: 'Cross Section' },
+              { type: 'TRANSVERSAL_CROSS_SECTION', label: 'Cross-Section' },
               { type: 'WOOD_GRAIN', label: 'Wood Grain' },
               { type: 'LOG_BARK', label: 'Log Bark' },
             ] as const
           ).map((m) => (
             <TouchableOpacity
               key={m.type}
-              style={[
-                styles.modalityPill,
-                modalityType === m.type && styles.modalityPillActive,
-              ]}
+              style={[styles.pill, modalityType === m.type && styles.pillActive]}
               onPress={() => setModalityType(m.type as ModalityType)}
             >
               <Text
                 style={[
-                  styles.modalityText,
-                  modalityType === m.type && styles.modalityTextActive,
+                  styles.pillText,
+                  modalityType === m.type && styles.pillTextActive,
                 ]}
               >
                 {m.label}
@@ -197,145 +255,86 @@ export default function ScanScreen() {
         </View>
       </View>
 
-      {/* 2. MODULE 5: PHYSICAL CONDITION DEFECT CHECKLIST */}
-      <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionHeader}>Module 5: Physical Condition Assessment</Text>
-        <Text style={styles.sectionSubText}>Flag Visible Structural Defect Types</Text>
-      </View>
-
-      <View style={styles.checklistCard}>
-        <TouchableOpacity
-          style={[styles.defectRow, hasDecayOrRot && styles.defectRowActive]}
-          onPress={toggleDecayOrRot}
-        >
-          <View style={styles.defectLeft}>
-            <MaterialCommunityIcons
-              name={hasDecayOrRot ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={hasDecayOrRot ? '#DC2626' : '#64748B'}
-            />
-            <View>
-              <Text style={styles.defectTitle}>Decay / Fungal Rot</Text>
-              <Text style={styles.defectDesc}>Softened fibers (-2 FPRDI Group penalty)</Text>
-            </View>
+      {/* ── Module 5: Condition Assessment ── */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View style={[styles.cardBadge, { backgroundColor: '#FEF6E4' }]}>
+            <Text style={[styles.cardBadgeText, { color: '#D97706' }]}>MODULE 5</Text>
           </View>
-        </TouchableOpacity>
+          <Text style={styles.cardTitle}>Physical Condition Assessment</Text>
+        </View>
+        <Text style={styles.cardSubtitle}>Flag all visible structural defect types</Text>
 
-        <TouchableOpacity
-          style={[styles.defectRow, hasEndSplitting && styles.defectRowActive]}
-          onPress={toggleEndSplitting}
-        >
-          <View style={styles.defectLeft}>
-            <MaterialCommunityIcons
-              name={hasEndSplitting ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={hasEndSplitting ? '#D97706' : '#64748B'}
-            />
-            <View>
-              <Text style={styles.defectTitle}>End Splitting / Cracks</Text>
-              <Text style={styles.defectDesc}>Separation along grain ends</Text>
+        {defects.map((defect, idx) => (
+          <TouchableOpacity
+            key={idx}
+            style={[styles.defectRow, defect.value && styles.defectRowActive]}
+            onPress={defect.toggle}
+            activeOpacity={0.8}
+          >
+            <View
+              style={[
+                styles.defectCheck,
+                defect.value && (defect.danger ? styles.defectCheckDanger : styles.defectCheckActive),
+              ]}
+            >
+              {defect.value && (
+                <Ionicons
+                  name="checkmark"
+                  size={14}
+                  color="#FFFFFF"
+                />
+              )}
             </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.defectRow, hasWarping && styles.defectRowActive]}
-          onPress={toggleWarping}
-        >
-          <View style={styles.defectLeft}>
-            <MaterialCommunityIcons
-              name={hasWarping ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={hasWarping ? '#D97706' : '#64748B'}
-            />
-            <View>
-              <Text style={styles.defectTitle}>Warping / Bowing</Text>
-              <Text style={styles.defectDesc}>Dimensional curvature distortion</Text>
+            <View style={styles.defectContent}>
+              <Text style={styles.defectLabel}>{defect.label}</Text>
+              <Text style={styles.defectDesc}>{defect.desc}</Text>
             </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.defectRow, hasUnsoundKnots && styles.defectRowActive]}
-          onPress={toggleUnsoundKnots}
-        >
-          <View style={styles.defectLeft}>
-            <MaterialCommunityIcons
-              name={hasUnsoundKnots ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={hasUnsoundKnots ? '#D97706' : '#64748B'}
-            />
-            <View>
-              <Text style={styles.defectTitle}>Unsound Loose Knots</Text>
-              <Text style={styles.defectDesc}>Decayed or loose knot holes</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.defectRow, hasInsectBoreholes && styles.defectRowActive]}
-          onPress={toggleInsectBoreholes}
-        >
-          <View style={styles.defectLeft}>
-            <MaterialCommunityIcons
-              name={hasInsectBoreholes ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'}
-              size={22}
-              color={hasInsectBoreholes ? '#D97706' : '#64748B'}
-            />
-            <View>
-              <Text style={styles.defectTitle}>Insect Boreholes</Text>
-              <Text style={styles.defectDesc}>Termite or beetle damage galleries</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ))}
 
         {/* Severity Selector */}
-        <Text style={styles.severityLabel}>Overall Defect Severity Rating:</Text>
-        <View style={styles.severityRow}>
+        <Text style={styles.subLabel}>Overall Defect Severity Rating</Text>
+        <View style={styles.pillRow}>
           {(['NONE', 'LOW', 'MODERATE', 'SEVERE'] as const).map((sev) => (
             <TouchableOpacity
               key={sev}
-              style={[
-                styles.severityPill,
-                defectSeverity === sev && styles.severityPillActive,
-              ]}
+              style={[styles.pill, defectSeverity === sev && styles.pillActive]}
               onPress={() => setDefectSeverity(sev as SeverityLevel)}
             >
               <Text
-                style={[
-                  styles.severityText,
-                  defectSeverity === sev && styles.severityTextActive,
-                ]}
+                style={[styles.pillText, defectSeverity === sev && styles.pillTextActive]}
               >
                 {sev}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        {/* Live Structural Defect Downgrade Banner */}
+
+        {/* Structural Downgrade Banner */}
         {totalPenalty > 0 ? (
           <View style={styles.downgradeBanner}>
-            <View style={styles.downgradeHeaderRow}>
-              <MaterialCommunityIcons name="alert-decagram" size={20} color="#DC2626" />
+            <Ionicons name="alert-circle" size={18} color="#DC2626" />
+            <View style={styles.bannerContent}>
               <Text style={styles.downgradeTitle}>
-                Structural Penalty: -{totalPenalty} FPRDI Group(s)
+                Structural Penalty: −{totalPenalty} FPRDI Group(s)
+              </Text>
+              <Text style={styles.downgradeDesc}>
+                Nominal Group II will be re-evaluated as Effective {sampleEffectiveGroup}.
               </Text>
             </View>
-            <Text style={styles.downgradeDesc}>
-              Active defects degrade bending capacity. Nominal Group II wood will be re-evaluated as Effective {sampleEffectiveGroup}.
-            </Text>
           </View>
         ) : (
-          <View style={styles.noDowngradeBanner}>
-            <MaterialCommunityIcons name="shield-check-outline" size={18} color="#059669" />
-            <Text style={styles.noDowngradeText}>
-              No active defects flagged. Full FPRDI structural capacity retained.
+          <View style={styles.safeBanner}>
+            <Ionicons name="shield-checkmark" size={18} color="#2D6A4F" />
+            <Text style={styles.safeText}>
+              No active defects. Full FPRDI structural capacity retained.
             </Text>
           </View>
         )}
       </View>
 
-      {/* 3. EXECUTE INFERENCE CTA */}
+      {/* ── Run AI Inference CTA ── */}
       <TouchableOpacity
         style={[styles.executeCta, isProcessing && styles.executeCtaDisabled]}
         onPress={handleRunInference}
@@ -343,10 +342,10 @@ export default function ScanScreen() {
         activeOpacity={0.85}
       >
         {isProcessing ? (
-          <ActivityIndicator color="#0F172A" />
+          <ActivityIndicator color="#FFFFFF" />
         ) : (
           <>
-            <Ionicons name="sparkles" size={20} color="#0F172A" />
+            <Ionicons name="sparkles" size={20} color="#FFFFFF" />
             <Text style={styles.executeCtaText}>Run AI Classification & Recommendation</Text>
           </>
         )}
@@ -358,41 +357,68 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F4F8F5',
   },
   content: {
-    padding: 16,
-    paddingBottom: 36,
+    paddingHorizontal: 20,
   },
-  sectionHeader: {
-    color: '#F8FAFC',
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1B4332',
+    marginBottom: 4,
+    letterSpacing: -0.3,
+  },
+  pageSubtitle: {
+    fontSize: 14,
+    color: '#52796F',
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  cardHeader: {
+    marginBottom: 14,
+  },
+  cardBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  cardBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    marginBottom: 10,
+    color: '#1B4332',
   },
-  sectionHeaderRow: {
-    marginTop: 16,
-    marginBottom: 10,
+  cardSubtitle: {
+    fontSize: 13,
+    color: '#52796F',
+    marginBottom: 12,
+    marginTop: -8,
   },
-  sectionSubText: {
-    color: '#94A3B8',
-    fontSize: 12,
-  },
-  previewCard: {
-    backgroundColor: '#1E293B',
+  cropFrame: {
+    width: '100%',
+    aspectRatio: 1,
+    backgroundColor: '#F4F8F5',
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
-    padding: 16,
-    alignItems: 'center',
-  },
-  cropOverlay: {
-    width: 224,
-    height: 224,
-    backgroundColor: '#0F172A',
-    borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#D97706',
+    borderColor: '#40916C',
+    borderStyle: 'dashed',
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -405,206 +431,205 @@ const styles = StyleSheet.create({
   emptyPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 20,
   },
-  cropGridText: {
-    color: '#D97706',
-    fontSize: 12,
+  cameraIconWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#EEF9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  cropLabel: {
+    color: '#2D6A4F',
+    fontSize: 13,
     fontWeight: '700',
-    marginTop: 8,
+    marginBottom: 4,
   },
-  cropSubText: {
-    color: '#64748B',
-    fontSize: 11,
+  cropHint: {
+    color: '#95A99E',
+    fontSize: 12,
     textAlign: 'center',
-    marginTop: 4,
   },
-  pickerButtonRow: {
+  pickerRow: {
     flexDirection: 'row',
     gap: 10,
-    width: '100%',
-    marginBottom: 14,
+    marginBottom: 16,
   },
-  pickerBtnPrimary: {
+  btnPrimary: {
     flex: 1,
-    backgroundColor: '#D97706',
     flexDirection: 'row',
+    backgroundColor: '#2D6A4F',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
     gap: 6,
   },
-  pickerBtnPrimaryText: {
-    color: '#0F172A',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  pickerBtnSecondary: {
-    flex: 1,
-    backgroundColor: '#334155',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 10,
-    gap: 6,
-  },
-  pickerBtnSecondaryText: {
-    color: '#F8FAFC',
+  btnPrimaryText: {
+    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '700',
   },
-  modalityHeader: {
-    color: '#94A3B8',
+  btnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#EEF9F4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#B7E4CC',
+    gap: 6,
+  },
+  btnSecondaryText: {
+    color: '#2D6A4F',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  subLabel: {
     fontSize: 12,
     fontWeight: '700',
-    alignSelf: 'flex-start',
-    marginBottom: 6,
+    color: '#52796F',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  modalityRow: {
+  pillRow: {
     flexDirection: 'row',
     gap: 8,
+    flexWrap: 'wrap',
   },
-  modalityPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#334155',
+  pill: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: '#F4F8F5',
+    borderWidth: 1.5,
+    borderColor: '#D1EEE3',
   },
-  modalityPillActive: {
-    backgroundColor: '#D9770622',
-    borderColor: '#D97706',
+  pillActive: {
+    backgroundColor: '#2D6A4F',
+    borderColor: '#2D6A4F',
   },
-  modalityText: {
-    color: '#94A3B8',
-    fontSize: 11,
+  pillText: {
+    color: '#52796F',
+    fontSize: 12,
     fontWeight: '600',
   },
-  modalityTextActive: {
-    color: '#D97706',
+  pillTextActive: {
+    color: '#FFFFFF',
     fontWeight: '700',
   },
-  checklistCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
-    padding: 16,
-  },
   defectRow: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-  },
-  defectRowActive: {
-    backgroundColor: '#0F172A44',
-  },
-  defectLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F5F2',
   },
-  defectTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  defectDesc: {
-    color: '#94A3B8',
-    fontSize: 12,
-  },
-  severityLabel: {
-    color: '#F8FAFC',
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 14,
-    marginBottom: 8,
-  },
-  severityRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  severityPill: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#0F172A',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  severityPillActive: {
-    backgroundColor: '#D97706',
-    borderColor: '#D97706',
-  },
-  severityText: {
-    color: '#94A3B8',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  severityTextActive: {
-    color: '#0F172A',
-  },
-  downgradeBanner: {
-    marginTop: 14,
-    padding: 12,
-    backgroundColor: '#DC26261A',
+  defectRowActive: {
+    backgroundColor: 'rgba(45,106,79,0.04)',
     borderRadius: 10,
-    borderWidth: 1,
+    paddingHorizontal: 6,
+  },
+  defectCheck: {
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: '#D1EEE3',
+    backgroundColor: '#F4F8F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  defectCheckActive: {
+    backgroundColor: '#2D6A4F',
+    borderColor: '#2D6A4F',
+  },
+  defectCheckDanger: {
+    backgroundColor: '#DC2626',
     borderColor: '#DC2626',
   },
-  downgradeHeaderRow: {
+  defectContent: {
+    flex: 1,
+  },
+  defectLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1B4332',
+  },
+  defectDesc: {
+    fontSize: 12,
+    color: '#52796F',
+    marginTop: 1,
+  },
+  downgradeBanner: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
+    alignItems: 'flex-start',
+    gap: 10,
+    marginTop: 14,
+    padding: 12,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+  },
+  bannerContent: {
+    flex: 1,
   },
   downgradeTitle: {
     color: '#DC2626',
     fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.3,
+    fontWeight: '700',
+    marginBottom: 2,
   },
   downgradeDesc: {
-    color: '#CBD5E1',
+    color: '#7F1D1D',
     fontSize: 12,
-    lineHeight: 17,
+    lineHeight: 16,
   },
-  noDowngradeBanner: {
-    marginTop: 14,
-    padding: 10,
-    backgroundColor: '#0596691A',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#059669',
+  safeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+    marginTop: 14,
+    padding: 12,
+    backgroundColor: '#EEF9F4',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#B7E4CC',
   },
-  noDowngradeText: {
-    color: '#059669',
+  safeText: {
+    color: '#2D6A4F',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
+    flex: 1,
   },
   executeCta: {
-    backgroundColor: '#D97706',
+    backgroundColor: '#1B4332',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 20,
-    gap: 8,
+    borderRadius: 16,
+    gap: 10,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
   executeCtaDisabled: {
     opacity: 0.6,
   },
   executeCtaText: {
-    color: '#0F172A',
+    color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '700',
   },
 });

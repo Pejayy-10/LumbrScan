@@ -1,4 +1,4 @@
-// LumbrScan Root Layout
+// LumbrScan Root Layout — Light Nature Theme
 
 import React from 'react';
 import { Stack } from 'expo-router';
@@ -8,18 +8,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#0F172A',
+            backgroundColor: '#FFFFFF',
           },
-          headerTintColor: '#F8FAFC',
+          headerTintColor: '#1B4332',
           headerTitleStyle: {
             fontWeight: '700',
+            fontSize: 17,
+            color: '#1B4332',
           },
+          headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: '#0F172A',
+            backgroundColor: '#F4F8F5',
           },
         }}
       >
@@ -27,7 +30,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="species/[id]"
           options={{
-            title: 'Species Classification & Legal Details',
+            title: 'Species Classification',
             headerBackTitle: 'Back',
           }}
         />

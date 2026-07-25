@@ -53,14 +53,19 @@ const styles = StyleSheet.create({
   },
   noticeBox: {
     marginTop: 8,
-    padding: 10,
-    backgroundColor: '#1E293B',
+    padding: 12,
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     borderLeftWidth: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
   noticeText: {
-    color: '#94A3B8',
+    color: '#374151',
     fontSize: 12,
-    lineHeight: 17,
+    lineHeight: 18,
   },
 });

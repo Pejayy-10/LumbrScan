@@ -1,79 +1,97 @@
-// LumbrScan FPRDI Structural Strength Group Badge Component
+// LumbrScan FPRDI Strength Group Badge — Light Theme
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { FprdiGroupCode, FPRDI_RATINGS } from '../../constants/domain';
+import { FprdiGroupCode } from '../../constants/domain';
+
+const GROUP_CONFIG: Record<
+  FprdiGroupCode,
+  { label: string; color: string; bg: string; border: string }
+> = {
+  GROUP_I: {
+    label: 'FPRDI GROUP I',
+    color: '#1B4332',
+    bg: '#D1FAE5',
+    border: '#6EE7B7',
+  },
+  GROUP_II: {
+    label: 'FPRDI GROUP II',
+    color: '#1D4ED8',
+    bg: '#DBEAFE',
+    border: '#93C5FD',
+  },
+  GROUP_III: {
+    label: 'FPRDI GROUP III',
+    color: '#D97706',
+    bg: '#FEF3C7',
+    border: '#FCD34D',
+  },
+  GROUP_IV: {
+    label: 'FPRDI GROUP IV',
+    color: '#DC2626',
+    bg: '#FEE2E2',
+    border: '#FCA5A5',
+  },
+};
 
 interface FprdiBadgeProps {
   groupCode: FprdiGroupCode;
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const FprdiBadge: React.FC<FprdiBadgeProps> = ({ groupCode, size = 'md' }) => {
-  const rating = FPRDI_RATINGS[groupCode] || FPRDI_RATINGS.GROUP_III;
-
-  const isSmall = size === 'sm';
-  const isLarge = size === 'lg';
+export function FprdiBadge({ groupCode, size = 'md' }: FprdiBadgeProps) {
+  const cfg = GROUP_CONFIG[groupCode];
 
   return (
     <View
       style={[
-        styles.container,
-        { backgroundColor: rating.badgeColorHex + '22', borderColor: rating.badgeColorHex },
-        isSmall && styles.smContainer,
-        isLarge && styles.lgContainer,
+        styles.badge,
+        { backgroundColor: cfg.bg, borderColor: cfg.border },
+        size === 'sm' && styles.badgeSm,
+        size === 'lg' && styles.badgeLg,
       ]}
     >
-      <View style={[styles.indicatorDot, { backgroundColor: rating.badgeColorHex }]} />
       <Text
         style={[
-          styles.text,
-          { color: rating.badgeColorHex },
-          isSmall && styles.smText,
-          isLarge && styles.lgText,
+          styles.label,
+          { color: cfg.color },
+          size === 'sm' && styles.labelSm,
+          size === 'lg' && styles.labelLg,
         ]}
       >
-        {rating.title}
+        {cfg.label}
       </Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
     alignSelf: 'flex-start',
   },
-  smContainer: {
-    paddingHorizontal: 8,
+  badgeSm: {
+    paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 6,
   },
-  lgContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
+  badgeLg: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 10,
   },
-  indicatorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  text: {
-    fontSize: 13,
-    fontWeight: '700',
+  label: {
+    fontSize: 11,
+    fontWeight: '800',
     letterSpacing: 0.3,
   },
-  smText: {
-    fontSize: 11,
+  labelSm: {
+    fontSize: 9,
   },
-  lgText: {
-    fontSize: 15,
+  labelLg: {
+    fontSize: 13,
   },
 });

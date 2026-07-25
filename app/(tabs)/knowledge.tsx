@@ -1,4 +1,5 @@
 // LumbrScan Module 3: Knowledge Base & Legal Regulatory Lookup Screen
+// Light Nature Theme
 
 import React, { useState } from 'react';
 import {
@@ -11,12 +12,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPECIES_DICTIONARY, TimberSpecies } from '../../constants/domain';
 import { FprdiBadge } from '../../components/ui/FprdiBadge';
 import { DenrBadge } from '../../components/ui/DenrBadge';
 
 export default function KnowledgeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'NATIVE' | 'PLANTATION'>('ALL');
 
@@ -38,24 +41,42 @@ export default function KnowledgeScreen() {
   });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* 1. Search Bar */}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: insets.top + 16, paddingBottom: 120 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Page Header ── */}
+      <Text style={styles.pageTitle}>Species Catalog</Text>
+      <Text style={styles.pageSubtitle}>
+        {filteredSpecies.length} of 11 Philippine timber species
+      </Text>
+
+      {/* ── Search Bar ── */}
       <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={20} color="#94A3B8" />
+        <Ionicons name="search-outline" size={20} color="#40916C" />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search 11 species by common or botanical name..."
-          placeholderTextColor="#64748B"
+          placeholder="Search by common or botanical name..."
+          placeholderTextColor="#95A99E"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Ionicons name="close-circle" size={18} color="#95A99E" />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* 2. Category Filter Tabs */}
+      {/* ── Category Filter Tabs ── */}
       <View style={styles.tabRow}>
         {(
           [
-            { id: 'ALL', label: 'All 11 Species' },
+            { id: 'ALL', label: 'All Species' },
             { id: 'NATIVE', label: 'Native Hardwoods' },
             { id: 'PLANTATION', label: 'Plantation & Palms' },
           ] as const
@@ -66,10 +87,7 @@ export default function KnowledgeScreen() {
             onPress={() => setActiveCategory(tab.id)}
           >
             <Text
-              style={[
-                styles.tabText,
-                activeCategory === tab.id && styles.tabTextActive,
-              ]}
+              style={[styles.tabText, activeCategory === tab.id && styles.tabTextActive]}
             >
               {tab.label}
             </Text>
@@ -77,7 +95,7 @@ export default function KnowledgeScreen() {
         ))}
       </View>
 
-      {/* 3. Species List Cards */}
+      {/* ── Species Cards ── */}
       {filteredSpecies.map((species: TimberSpecies) => (
         <TouchableOpacity
           key={species.id}
@@ -85,29 +103,49 @@ export default function KnowledgeScreen() {
           onPress={() => router.push(`/species/${species.id}`)}
           activeOpacity={0.85}
         >
-          <View style={styles.cardHeader}>
-            <View>
-              <Text style={styles.commonName}>{species.commonName}</Text>
-              <Text style={styles.botanicalName}>{species.botanicalName}</Text>
-            </View>
-            <FprdiBadge groupCode={species.fprdiGroup} size="sm" />
-          </View>
+          {/* Left accent bar */}
+          <View style={styles.accentBar} />
 
-          <Text style={styles.grainText} numberOfLines={2}>
-            {species.grainCharacteristics}
-          </Text>
-
-          <DenrBadge statusCode={species.denrStatus} showNotice={false} />
-
-          <View style={styles.usesRow}>
-            {species.primaryUses.slice(0, 3).map((use, idx) => (
-              <View key={idx} style={styles.usePill}>
-                <Text style={styles.usePillText}>{use}</Text>
+          <View style={styles.cardInner}>
+            <View style={styles.cardHeader}>
+              <View style={styles.cardHeaderLeft}>
+                <Text style={styles.commonName}>{species.commonName}</Text>
+                <Text style={styles.botanicalName}>{species.botanicalName}</Text>
               </View>
-            ))}
+              <FprdiBadge groupCode={species.fprdiGroup} size="sm" />
+            </View>
+
+            <Text style={styles.grainText} numberOfLines={2}>
+              {species.grainCharacteristics}
+            </Text>
+
+            <DenrBadge statusCode={species.denrStatus} showNotice={false} />
+
+            <View style={styles.usesRow}>
+              {species.primaryUses.slice(0, 3).map((use, idx) => (
+                <View key={idx} style={styles.usePill}>
+                  <Text style={styles.usePillText}>{use}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.cardFooter}>
+              <Text style={styles.localNameText}>
+                Local: <Text style={{ fontStyle: 'italic' }}>{species.localName}</Text>
+              </Text>
+              <Ionicons name="chevron-forward" size={16} color="#95A99E" />
+            </View>
           </View>
         </TouchableOpacity>
       ))}
+
+      {filteredSpecies.length === 0 && (
+        <View style={styles.emptyState}>
+          <Ionicons name="search-outline" size={40} color="#B7E4CC" />
+          <Text style={styles.emptyTitle}>No species found</Text>
+          <Text style={styles.emptyHint}>Try a different name or clear the filter.</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -115,27 +153,41 @@ export default function KnowledgeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F4F8F5',
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
+    paddingHorizontal: 20,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1B4332',
+    letterSpacing: -0.3,
+    marginBottom: 4,
+  },
+  pageSubtitle: {
+    fontSize: 14,
+    color: '#52796F',
+    marginBottom: 18,
   },
   searchBox: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-    marginBottom: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
     gap: 10,
+    marginBottom: 14,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    color: '#F8FAFC',
+    color: '#1B4332',
     fontSize: 14,
   },
   tabRow: {
@@ -146,30 +198,43 @@ const styles = StyleSheet.create({
   tabPill: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#1E293B',
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#D1EEE3',
   },
   tabPillActive: {
-    backgroundColor: '#D97706',
-    borderColor: '#D97706',
+    backgroundColor: '#2D6A4F',
+    borderColor: '#2D6A4F',
   },
   tabText: {
-    color: '#94A3B8',
+    color: '#52796F',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   tabTextActive: {
-    color: '#0F172A',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   card: {
-    backgroundColor: '#1E293B',
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginBottom: 12,
+    flexDirection: 'row',
+    overflow: 'hidden',
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  accentBar: {
+    width: 4,
+    backgroundColor: '#40916C',
+  },
+  cardInner: {
+    flex: 1,
+    padding: 16,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -177,18 +242,23 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 8,
   },
+  cardHeaderLeft: {
+    flex: 1,
+    marginRight: 10,
+  },
   commonName: {
-    color: '#F8FAFC',
     fontSize: 17,
     fontWeight: '800',
+    color: '#1B4332',
   },
   botanicalName: {
-    color: '#94A3B8',
     fontSize: 13,
+    color: '#52796F',
     fontStyle: 'italic',
+    marginTop: 2,
   },
   grainText: {
-    color: '#CBD5E1',
+    color: '#52796F',
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
@@ -200,15 +270,41 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   usePill: {
-    backgroundColor: '#0F172A',
+    backgroundColor: '#EEF9F4',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#D1EEE3',
   },
   usePillText: {
-    color: '#94A3B8',
+    color: '#2D6A4F',
     fontSize: 11,
+    fontWeight: '600',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  localNameText: {
+    fontSize: 12,
+    color: '#95A99E',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1B4332',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptyHint: {
+    fontSize: 13,
+    color: '#52796F',
   },
 });

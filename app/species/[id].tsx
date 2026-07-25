@@ -1,4 +1,5 @@
 // LumbrScan Detailed Species Classification & Legal Regulatory View Screen
+// Light Nature Theme
 
 import React, { useState } from 'react';
 import {
@@ -42,9 +43,13 @@ export default function SpeciesDetailScreen() {
   const effectiveFprdiGroup = getEffectiveFprdiGroup(species.fprdiGroup);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* 1. Species Header Card */}
-      <View style={styles.headerCard}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Species Hero Header ── */}
+      <View style={styles.heroCard}>
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryBadgeText}>
             {species.category === 'NATIVE_REGULATED_HARDWOOD'
@@ -52,47 +57,48 @@ export default function SpeciesDetailScreen() {
               : 'PLANTATION / PALM / FRUIT WOOD'}
           </Text>
         </View>
+        <Text style={styles.heroCommonName}>{species.commonName}</Text>
+        <Text style={styles.heroBotanical}>{species.botanicalName}</Text>
+        <Text style={styles.heroLocal}>
+          <Text style={{ color: 'rgba(255,255,255,0.6)' }}>Local Name: </Text>
+          {species.localName}
+        </Text>
 
-        <Text style={styles.commonName}>{species.commonName}</Text>
-        <Text style={styles.botanicalName}>{species.botanicalName}</Text>
-        <Text style={styles.localName}>Local Name: {species.localName}</Text>
+        <View style={styles.heroFooter}>
+          <FprdiBadge groupCode={species.fprdiGroup} size="lg" />
+        </View>
       </View>
 
-      {/* 2. Animated AI Prediction Confidence Gauge */}
+      {/* ── Confidence Gauge ── */}
       <ConfidenceGauge confidenceScore={confidenceScore} speciesName={species.commonName} />
 
-      {/* 3. Exportable Decision Support Report CTA */}
+      {/* ── Generate Report CTA ── */}
       <TouchableOpacity
-        style={styles.exportReportBtn}
+        style={styles.exportBtn}
         onPress={() => setIsReportModalOpen(true)}
         activeOpacity={0.85}
       >
-        <MaterialCommunityIcons name="file-certificate" size={20} color="#0F172A" />
-        <Text style={styles.exportReportBtnText}>
-          Generate Field Inspection & Decision Report
-        </Text>
+        <MaterialCommunityIcons name="file-certificate" size={20} color="#FFFFFF" />
+        <Text style={styles.exportBtnText}>Generate Field Inspection & Decision Report</Text>
       </TouchableOpacity>
 
-      {/* 4. DENR DAO 2026-20 Legal Regulatory Shield */}
-      <Text style={styles.sectionHeader}>DENR Legal Regulatory Status</Text>
-      <DenrBadge statusCode={species.denrStatus} showNotice={true} />
+      {/* ── DENR Regulatory Status ── */}
+      <Text style={styles.sectionTitle}>DENR Legal Regulatory Status</Text>
+      <View style={styles.card}>
+        <DenrBadge statusCode={species.denrStatus} showNotice={true} />
+        <TouchableOpacity
+          style={styles.permitBtn}
+          onPress={() => setIsPermitModalOpen(true)}
+          activeOpacity={0.8}
+        >
+          <MaterialCommunityIcons name="file-document-outline" size={17} color="#2D6A4F" />
+          <Text style={styles.permitBtnText}>View DENR Permit & CTO Application Workflow</Text>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity
-        style={styles.permitGuideBtn}
-        onPress={() => setIsPermitModalOpen(true)}
-        activeOpacity={0.8}
-      >
-        <MaterialCommunityIcons name="file-document-outline" size={18} color="#D97706" />
-        <Text style={styles.permitGuideBtnText}>
-          View DENR Permit & CTO Application Workflow
-        </Text>
-      </TouchableOpacity>
-
-      {/* 5. FPRDI Structural Engineering Properties */}
-      <Text style={styles.sectionHeader}>FPRDI Structural Rating</Text>
-      <View style={styles.fprdiCard}>
-        <FprdiBadge groupCode={species.fprdiGroup} size="lg" />
-
+      {/* ── FPRDI Structural Rating ── */}
+      <Text style={styles.sectionTitle}>FPRDI Structural Rating</Text>
+      <View style={styles.card}>
         <Text style={styles.fprdiDesc}>{fprdi.description}</Text>
 
         <View style={styles.propsGrid}>
@@ -109,35 +115,47 @@ export default function SpeciesDetailScreen() {
             <Text style={styles.propValue}>{fprdi.loadCapacity}</Text>
           </View>
         </View>
+
+        {totalPenalty > 0 && (
+          <View style={styles.penaltyBanner}>
+            <Ionicons name="alert-circle" size={16} color="#DC2626" />
+            <Text style={styles.penaltyText}>
+              Effective Group: {effectiveFprdiGroup} (−{totalPenalty} defect penalty applied)
+            </Text>
+          </View>
+        )}
       </View>
 
-      {/* 6. Grain & Texture Characteristics */}
-      <Text style={styles.sectionHeader}>Grain & Visual Texture</Text>
-      <View style={styles.infoCard}>
-        <Text style={styles.infoText}>{species.grainCharacteristics}</Text>
+      {/* ── Grain & Texture ── */}
+      <Text style={styles.sectionTitle}>Grain & Visual Texture</Text>
+      <View style={styles.card}>
+        <Text style={styles.grainText}>{species.grainCharacteristics}</Text>
       </View>
 
-      {/* 7. Permissible Construction Applications */}
-      <Text style={styles.sectionHeader}>Primary Construction Uses</Text>
-      <View style={styles.usesCard}>
+      {/* ── Primary Construction Uses ── */}
+      <Text style={styles.sectionTitle}>Primary Construction Uses</Text>
+      <View style={styles.card}>
         {species.primaryUses.map((use, index) => (
           <View key={index} style={styles.useRow}>
-            <Ionicons name="checkmark-circle" size={18} color="#059669" />
+            <View style={styles.useCheck}>
+              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+            </View>
             <Text style={styles.useText}>{use}</Text>
           </View>
         ))}
       </View>
 
+      {/* ── Recommender CTA ── */}
       <TouchableOpacity
         style={styles.recommenderCta}
         onPress={() => router.push('/recommend')}
         activeOpacity={0.85}
       >
-        <Ionicons name="swap-horizontal" size={20} color="#0F172A" />
+        <Ionicons name="swap-horizontal" size={18} color="#1B4332" />
         <Text style={styles.recommenderCtaText}>Test in Two-Way Recommender</Text>
       </TouchableOpacity>
 
-      {/* DENR Permit Guide Modal */}
+      {/* ── Modals ── */}
       <DenrPermitModal
         visible={isPermitModalOpen}
         onClose={() => setIsPermitModalOpen(false)}
@@ -145,7 +163,6 @@ export default function SpeciesDetailScreen() {
         speciesName={species.commonName}
       />
 
-      {/* Exportable Inspection Report Modal */}
       <InspectionReportModal
         visible={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
@@ -163,102 +180,120 @@ export default function SpeciesDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F4F8F5',
   },
   content: {
     padding: 16,
-    paddingBottom: 36,
+    paddingBottom: 40,
   },
-  headerCard: {
-    backgroundColor: '#1E293B',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#334155',
+  heroCard: {
+    backgroundColor: '#1B4332',
+    borderRadius: 20,
+    padding: 22,
     marginBottom: 16,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
   },
   categoryBadge: {
-    backgroundColor: '#D9770622',
+    backgroundColor: 'rgba(116,198,157,0.2)',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 20,
     alignSelf: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(116,198,157,0.35)',
   },
   categoryBadgeText: {
-    color: '#D97706',
+    color: '#74C69D',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
   },
-  commonName: {
-    color: '#F8FAFC',
-    fontSize: 24,
+  heroCommonName: {
+    color: '#FFFFFF',
+    fontSize: 26,
     fontWeight: '800',
+    letterSpacing: -0.5,
   },
-  botanicalName: {
-    color: '#94A3B8',
+  heroBotanical: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 15,
     fontStyle: 'italic',
-    marginTop: 2,
+    marginTop: 4,
+    marginBottom: 6,
   },
-  localName: {
-    color: '#CBD5E1',
+  heroLocal: {
+    color: 'rgba(255,255,255,0.85)',
     fontSize: 13,
-    marginTop: 6,
+    marginBottom: 16,
   },
-  exportReportBtn: {
-    backgroundColor: '#D97706',
+  heroFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 12,
-    marginBottom: 16,
-    gap: 8,
   },
-  exportReportBtnText: {
-    color: '#0F172A',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  sectionHeader: {
-    color: '#F8FAFC',
+  sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    marginTop: 14,
-    marginBottom: 8,
+    color: '#1B4332',
+    marginTop: 6,
+    marginBottom: 10,
   },
-  permitGuideBtn: {
-    backgroundColor: '#1E293B',
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 6,
+    shadowColor: '#1B4332',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  exportBtn: {
+    backgroundColor: '#2D6A4F',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#D97706',
-    marginTop: 10,
-    marginBottom: 10,
+    paddingVertical: 15,
+    borderRadius: 14,
+    marginBottom: 18,
     gap: 8,
+    shadowColor: '#2D6A4F',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  permitGuideBtnText: {
-    color: '#D97706',
-    fontSize: 13,
+  exportBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '700',
   },
-  fprdiCard: {
-    backgroundColor: '#1E293B',
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
+  permitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11,
+    marginTop: 12,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#B7E4CC',
+    backgroundColor: '#EEF9F4',
+    gap: 6,
+  },
+  permitBtnText: {
+    color: '#2D6A4F',
+    fontSize: 13,
+    fontWeight: '600',
   },
   fprdiDesc: {
-    color: '#94A3B8',
+    color: '#52796F',
     fontSize: 13,
-    lineHeight: 18,
-    marginTop: 10,
+    lineHeight: 19,
     marginBottom: 14,
   },
   propsGrid: {
@@ -267,67 +302,80 @@ const styles = StyleSheet.create({
   },
   propItem: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F4F8F5',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#E2EEEA',
   },
   propLabel: {
-    color: '#64748B',
+    color: '#95A99E',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: 4,
   },
   propValue: {
-    color: '#F8FAFC',
+    color: '#1B4332',
     fontSize: 12,
     fontWeight: '700',
-    marginTop: 4,
   },
-  infoCard: {
-    backgroundColor: '#1E293B',
-    padding: 14,
-    borderRadius: 12,
+  penaltyBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+    padding: 10,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#FECACA',
   },
-  infoText: {
-    color: '#CBD5E1',
+  penaltyText: {
+    color: '#DC2626',
+    fontSize: 12,
+    fontWeight: '700',
+    flex: 1,
+  },
+  grainText: {
+    color: '#52796F',
     fontSize: 13,
     lineHeight: 19,
-  },
-  usesCard: {
-    backgroundColor: '#1E293B',
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-    gap: 10,
   },
   useRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    paddingVertical: 6,
+  },
+  useCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: '#40916C',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   useText: {
-    color: '#F8FAFC',
+    color: '#1B4332',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
+    flex: 1,
   },
   recommenderCta: {
-    backgroundColor: '#D97706',
+    backgroundColor: '#74C69D',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 24,
+    paddingVertical: 15,
+    borderRadius: 14,
+    marginTop: 14,
     gap: 8,
   },
   recommenderCtaText: {
-    color: '#0F172A',
+    color: '#1B4332',
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '700',
   },
 });
