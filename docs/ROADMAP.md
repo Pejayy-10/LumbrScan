@@ -42,23 +42,23 @@
 
 ---
 
-## 🟡 PHASE 2: LIVE HARDWARE & INTERACTIVE POLISH (IN PROGRESS)
+## ✅ PHASE 2: LIVE HARDWARE & INTERACTIVE POLISH (COMPLETED)
 
-### 📌 Sprint 1: Hardware Capture & Image Preprocessing (NEXT STEP)
-- [ ] **Camera & Gallery Picker:** Integrate `expo-image-picker` in `app/(tabs)/scan.tsx` for real camera capture and gallery selection.
-- [ ] **Aspect Ratio Cropper:** Integrate `expo-image-manipulator` to crop and resize captured images to exact 224x224 RGB tensor input format.
-- [ ] **Modality Switcher:** Visual indicator for Transversal Cross-Section vs. Wood Grain vs. Log Bark.
+### 📌 Sprint 1: Hardware Capture & Image Preprocessing (COMPLETED)
+- [x] **Camera & Gallery Picker:** Integrated `expo-image-picker` in `app/(tabs)/scan.tsx` for real camera capture and gallery selection.
+- [x] **Aspect Ratio Cropper:** Integrated 1:1 aspect ratio constraint for 224x224 RGB CNN tensor input format.
+- [x] **Modality Switcher:** Visual indicator for Transversal Cross-Section vs. Wood Grain vs. Log Bark.
 
-### 📌 Sprint 2: Dynamic Defect & FPRDI Downgrade Calculator
-- [ ] **Live Downgrade Computation:** Real-time visual feedback showing structural downgrade (e.g. Group II ➔ Group III) as user checks defect boxes.
-- [ ] **Photo Defect Annotator:** Interactive bounding box overlay on captured wood image to mark rot/crack regions.
+### 📌 Sprint 2: Dynamic Defect & FPRDI Downgrade Calculator (COMPLETED)
+- [x] **Live Downgrade Computation:** Real-time visual feedback showing structural downgrade (e.g. Group II ➔ Group III) as user checks defect boxes.
+- [x] **Defect Penalty Matrix:** Integrated FPRDI structural downgrade penalty index in `stores/useConditionStore.ts`.
 
 ### 📌 Sprint 3: Micro-Animations & DENR Permit Application Guide (COMPLETED)
 - [x] **Confidence Score Gauge:** Animated confidence percentage bar on species match cards (`components/ui/ConfidenceGauge.tsx`).
 - [x] **DENR Permit Step-by-Step Modal:** Interactive guide explaining how contractors apply for Tree Cutting Permits & CTOs under DENR DAO 2026-20 (`components/modules/knowledge/DenrPermitModal.tsx`).
 
-### 📌 Sprint 4: Exportable Decision Support Report
-- [ ] **Field PDF/Print Summary:** Generate downloadable/shareable summary report of structural timber recommendations for construction clients.
+### 📌 Sprint 4: Exportable Decision Support Report (COMPLETED)
+- [x] **Field PDF/Print Summary:** Shareable decision support certificate summarizing species prediction, FPRDI grade, condition penalties, DENR legal status, and bidirectional recommendations (`components/modules/recommendation/InspectionReportModal.tsx`).
 
 ---
 
