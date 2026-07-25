@@ -15,14 +15,19 @@ import { FprdiBadge } from '../../components/ui/FprdiBadge';
 import { DenrBadge } from '../../components/ui/DenrBadge';
 import { ConfidenceGauge } from '../../components/ui/ConfidenceGauge';
 import { DenrPermitModal } from '../../components/modules/knowledge/DenrPermitModal';
+import { InspectionReportModal } from '../../components/modules/recommendation/InspectionReportModal';
 import { useScanStore } from '../../stores/useScanStore';
+import { useConditionStore } from '../../stores/useConditionStore';
 
 export default function SpeciesDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [isPermitModalOpen, setIsPermitModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const activeResult = useScanStore((state) => state.activeResult);
+  const getTotalPenalty = useConditionStore((state) => state.getTotalPenalty);
+  const getEffectiveFprdiGroup = useConditionStore((state) => state.getEffectiveFprdiGroup);
 
   const species = (id && SPECIES_DICTIONARY[id as string]) || SPECIES_DICTIONARY.apitong;
   const fprdi = FPRDI_RATINGS[species.fprdiGroup];
@@ -32,6 +37,9 @@ export default function SpeciesDetailScreen() {
     activeResult?.prediction?.primaryMatch?.id === species.id
       ? activeResult.prediction.primaryMatch.confidenceScore
       : 0.942;
+
+  const totalPenalty = getTotalPenalty();
+  const effectiveFprdiGroup = getEffectiveFprdiGroup(species.fprdiGroup);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -53,7 +61,19 @@ export default function SpeciesDetailScreen() {
       {/* 2. Animated AI Prediction Confidence Gauge */}
       <ConfidenceGauge confidenceScore={confidenceScore} speciesName={species.commonName} />
 
-      {/* 3. DENR DAO 2026-20 Legal Regulatory Shield */}
+      {/* 3. Exportable Decision Support Report CTA */}
+      <TouchableOpacity
+        style={styles.exportReportBtn}
+        onPress={() => setIsReportModalOpen(true)}
+        activeOpacity={0.85}
+      >
+        <MaterialCommunityIcons name="file-certificate" size={20} color="#0F172A" />
+        <Text style={styles.exportReportBtnText}>
+          Generate Field Inspection & Decision Report
+        </Text>
+      </TouchableOpacity>
+
+      {/* 4. DENR DAO 2026-20 Legal Regulatory Shield */}
       <Text style={styles.sectionHeader}>DENR Legal Regulatory Status</Text>
       <DenrBadge statusCode={species.denrStatus} showNotice={true} />
 
@@ -68,7 +88,7 @@ export default function SpeciesDetailScreen() {
         </Text>
       </TouchableOpacity>
 
-      {/* 4. FPRDI Structural Engineering Properties */}
+      {/* 5. FPRDI Structural Engineering Properties */}
       <Text style={styles.sectionHeader}>FPRDI Structural Rating</Text>
       <View style={styles.fprdiCard}>
         <FprdiBadge groupCode={species.fprdiGroup} size="lg" />
@@ -91,13 +111,13 @@ export default function SpeciesDetailScreen() {
         </View>
       </View>
 
-      {/* 5. Grain & Texture Characteristics */}
+      {/* 6. Grain & Texture Characteristics */}
       <Text style={styles.sectionHeader}>Grain & Visual Texture</Text>
       <View style={styles.infoCard}>
         <Text style={styles.infoText}>{species.grainCharacteristics}</Text>
       </View>
 
-      {/* 6. Permissible Construction Applications */}
+      {/* 7. Permissible Construction Applications */}
       <Text style={styles.sectionHeader}>Primary Construction Uses</Text>
       <View style={styles.usesCard}>
         {species.primaryUses.map((use, index) => (
@@ -123,6 +143,18 @@ export default function SpeciesDetailScreen() {
         onClose={() => setIsPermitModalOpen(false)}
         statusCode={species.denrStatus}
         speciesName={species.commonName}
+      />
+
+      {/* Exportable Inspection Report Modal */}
+      <InspectionReportModal
+        visible={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        species={species}
+        fprdi={fprdi}
+        denr={denr}
+        effectiveFprdiGroup={effectiveFprdiGroup}
+        totalPenalty={totalPenalty}
+        confidenceScore={confidenceScore}
       />
     </ScrollView>
   );
@@ -174,6 +206,21 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     fontSize: 13,
     marginTop: 6,
+  },
+  exportReportBtn: {
+    backgroundColor: '#D97706',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 16,
+    gap: 8,
+  },
+  exportReportBtnText: {
+    color: '#0F172A',
+    fontSize: 14,
+    fontWeight: '800',
   },
   sectionHeader: {
     color: '#F8FAFC',
