@@ -30,7 +30,14 @@ export default function RootLayout() {
         <Stack.Screen
           name="species/[id]"
           options={{
-            title: 'Species Classification',
+            title: 'Species Profile & Compliance',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="history/[id]"
+          options={{
+            title: 'Inspection History Log',
             headerBackTitle: 'Back',
           }}
         />

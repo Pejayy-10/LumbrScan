@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "LumbrScan Mock API Contract Schema",
-  "description": "Exhaustive JSON REST contract for LumbrScan Dual-Backbone AI Classification & Two-Way Decision Support Engine.",
+  "description": "Exhaustive JSON REST contract for LumbrScan Dual-Backbone AI Classification, Automated Vision Defect Detection, and Two-Way Decision Support Engine.",
   "endpoints": {
     "/api/v1/predict": {
       "method": "POST",
@@ -13,26 +13,15 @@
           "targetHeight": 224,
           "modalityType": "TRANSVERSAL_CROSS_SECTION"
         },
-        "conditionAssessment": {
-          "hasDecayOrRot": true,
-          "hasEndSplitting": false,
-          "hasWarping": false,
-          "hasUnsoundKnots": true,
-          "hasInsectBoreholes": false,
-          "defectSeverity": "MODERATE"
-        },
-        "userPreferences": {
-          "desiredApplication": "ROOF_TRUSS_RAFTER",
-          "budgetTier": "MEDIUM"
-        }
+        "intendedApplication": "ROOF_TRUSS_RAFTER"
       },
       "responsePayload": {
         "status": "SUCCESS",
-        "timestamp": "2026-07-25T00:15:00Z",
+        "timestamp": "2026-07-28T14:30:00Z",
         "processingTimeMs": 680,
         "prediction": {
           "primaryMatch": {
-            "id": "apitong_004",
+            "id": "apitong",
             "commonName": "Apitong",
             "botanicalName": "Dipterocarpus grandiflorus",
             "localName": "Apitong",
@@ -43,13 +32,13 @@
           },
           "alternativeMatches": [
             {
-              "id": "white_lauan_005",
+              "id": "white_lauan",
               "commonName": "White Lauan",
               "botanicalName": "Shorea contorta",
               "confidenceScore": 0.043
             },
             {
-              "id": "ipil_002",
+              "id": "ipil",
               "commonName": "Ipil",
               "botanicalName": "Intsia bijuga",
               "confidenceScore": 0.012
@@ -67,7 +56,7 @@
           },
           "denrRegulatoryStatus": {
             "statusCode": "REGULATED_PERMIT_REQUIRED",
-            "badgeTitle": "COMMERCIAL NATIVE HARDWOOD - PERMIT REQUIRED",
+            "badgeTitle": "NATIVE REGULATED - PERMIT REQUIRED",
             "badgeColorHex": "#DC2626",
             "requiresCuttingPermit": true,
             "requiresTransportPermit": true,
@@ -75,102 +64,59 @@
             "legalWarningNotice": "Mandatory Certificate of Timber Origin (CTO) and DENR transport permits are required prior to hauling or construction installation."
           }
         },
-        "conditionEvaluation": {
-          "assessedDefects": [
+        "automatedDefectDetection": {
+          "hasDefects": true,
+          "overallSeverity": "MINOR",
+          "detectedDefects": [
             {
-              "defectType": "DECAY_ROT",
-              "label": "Decay / Fungal Rot Present",
-              "severity": "MODERATE",
-              "strengthDowngradePenalty": -1
-            },
-            {
-              "defectType": "UNSOUND_KNOTS",
-              "label": "Unsound Loose Knots Present",
-              "severity": "LOW",
-              "strengthDowngradePenalty": 0
+              "defectType": "END_SPLITTING",
+              "label": "End Splitting / Cracks",
+              "severity": "MINOR",
+              "confidenceScore": 0.94,
+              "penaltyPoints": 1
             }
           ],
-          "originalFprdiGroup": "GROUP_II",
-          "effectiveFprdiGroup": "GROUP_III",
-          "conditionWarningSummary": "Fungal decay reduces structural bending strength. Material downgraded from Group II to Group III."
+          "remediationRecommendations": [
+            "Apply high-penetration epoxy or polyurethane wood filler along end split lines.",
+            "Seal log/lumber cut ends with paraffin wax or acrylic end-grain sealer.",
+            "Install corrugated metal fasteners or S-dogs across splits to prevent propagation."
+          ]
         },
-        "twoWayRecommendation": {
-          "materialToTask": {
-            "speciesName": "Apitong (with Moderate Decay)",
-            "permissibleApplications": [
-              {
-                "applicationCode": "INTERIOR_WALL_STUDS",
-                "title": "Interior Light Wall Framing",
-                "safetyRating": "SAFE",
-                "rationale": "Sufficient strength for non-load bearing interior studs despite Group III downgrade."
-              },
-              {
-                "applicationCode": "TEMPORARY_FORMWORK",
-                "title": "Concrete Formwork Bracing",
-                "safetyRating": "PERMISSIBLE_WITH_CAUTION",
-                "rationale": "Permissible for temporary bracing; inspect decay zones before load application."
-              }
-            ],
-            "prohibitedApplications": [
-              {
-                "applicationCode": "HEAVY_STRUCTURAL_BEAM",
-                "title": "Heavy Post & Bridge Foundation Beams",
-                "safetyRating": "PROHIBITED_UNSAFE",
-                "rationale": "UNSAFE: Fungal rot severely degrades shear resistance under continuous heavy loads."
-              },
-              {
-                "applicationCode": "ROOF_TRUSS_RAFTER",
-                "title": "Primary Roof Trusses & Load-Bearing Rafters",
-                "safetyRating": "HIGH_RISK_NOT_RECOMMENDED",
-                "rationale": "NOT RECOMMENDED: Truss tension members require defect-free Group II structural grade."
-              }
-            ]
-          }
+        "structuralAssessment": {
+          "nominalFprdiGroup": "GROUP_II",
+          "effectiveFprdiGroup": "GROUP_III",
+          "totalPenaltyPoints": 1,
+          "safetyRating": "SAFE",
+          "isSafeForIntendedUse": true,
+          "severeDefectFallback": null
         }
       }
     },
-    "/api/v1/recommend": {
+    "/api/v1/estimator": {
       "method": "POST",
       "requestPayload": {
-        "recommendationMode": "TASK_TO_MATERIAL",
-        "taskParameters": {
-          "desiredApplication": "HEAVY_STRUCTURAL_BEAM",
-          "minimumFprdiGroup": "GROUP_I",
-          "budgetConstraint": "HIGH",
-          "mustBeDenrExempt": false
-        }
+        "constructionTask": "ROOF_TRUSS_RAFTER",
+        "estimatedBoardFeet": 150,
+        "maxBudgetPhp": 25000
       },
       "responsePayload": {
         "status": "SUCCESS",
-        "timestamp": "2026-07-25T00:15:05Z",
-        "recommendationMode": "TASK_TO_MATERIAL",
-        "targetApplication": {
-          "code": "HEAVY_STRUCTURAL_BEAM",
-          "title": "Heavy Structural Posts & Foundation Beams",
-          "requiredFprdiGroup": "GROUP_I"
-        },
-        "recommendedSpeciesList": [
+        "userTask": "Roof Trusses & Primary Load Rafters",
+        "requiredFprdiGroup": "GROUP_II",
+        "estimatedBoardFeet": 150,
+        "maxBudgetPhp": 25000,
+        "suitableSpeciesOptions": [
           {
-            "rank": 1,
-            "id": "molave_003",
-            "commonName": "Molave",
-            "botanicalName": "Vitex parviflora",
-            "fprdiGroup": "GROUP_I",
-            "denrStatus": "REGULATED_PERMIT_REQUIRED",
-            "suitabilityScore": 0.98,
-            "keyAdvantages": "Exceptional resistance to weather and soil decay; highest structural load capacity.",
-            "estimatedCostTier": "HIGH"
-          },
-          {
-            "rank": 2,
-            "id": "yakal_006",
-            "commonName": "Yakal",
-            "botanicalName": "Shorea astylosa",
-            "fprdiGroup": "GROUP_I",
-            "denrStatus": "CRITICALLY_ENDANGERED_PERMIT_REQUIRED",
-            "suitabilityScore": 0.95,
-            "keyAdvantages": "Extreme bending stress tolerance (>85 MPa); ideal for heavy roof trusses and bridge piles.",
-            "estimatedCostTier": "VERY_HIGH"
+            "speciesId": "apitong",
+            "commonName": "Apitong",
+            "botanicalName": "Dipterocarpus grandiflorus",
+            "fprdiGroup": "GROUP_II",
+            "pricePerBoardFootPhp": 155,
+            "totalEstimatedCostPhp": 23250,
+            "withinBudget": true,
+            "priceTier": "MID_RANGE",
+            "suitabilityRank": 1,
+            "recommendationReason": "Excellent fit! Meets GROUP_II requirement and fits within PHP 25,000 budget envelope."
           }
         ]
       }

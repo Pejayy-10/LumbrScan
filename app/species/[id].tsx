@@ -1,4 +1,4 @@
-// LumbrScan Detailed Species Classification & Legal Regulatory View Screen
+// LumbrScan Detailed Species Profile & Regulatory View Screen
 // Light Nature Theme
 
 import React, { useState } from 'react';
@@ -66,6 +66,11 @@ export default function SpeciesDetailScreen() {
 
         <View style={styles.heroFooter}>
           <FprdiBadge groupCode={species.fprdiGroup} size="lg" />
+          <View style={styles.pricePill}>
+            <Text style={styles.pricePillText}>
+              ₱{species.pricePerBoardFootPhp.min}–₱{species.pricePerBoardFootPhp.max} / bd.ft
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -96,8 +101,8 @@ export default function SpeciesDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* ── FPRDI Structural Rating ── */}
-      <Text style={styles.sectionTitle}>FPRDI Structural Rating</Text>
+      {/* ── FPRDI Structural & Mechanical Properties ── */}
+      <Text style={styles.sectionTitle}>FPRDI Mechanical & Physical Properties</Text>
       <View style={styles.card}>
         <Text style={styles.fprdiDesc}>{fprdi.description}</Text>
 
@@ -111,8 +116,29 @@ export default function SpeciesDetailScreen() {
             <Text style={styles.propValue}>{fprdi.elasticityGpa}</Text>
           </View>
           <View style={styles.propItem}>
-            <Text style={styles.propLabel}>Load Capacity</Text>
-            <Text style={styles.propValue}>{fprdi.loadCapacity}</Text>
+            <Text style={styles.propLabel}>Density (g/cm³)</Text>
+            <Text style={styles.propValue}>{species.basicRelativeDensity}</Text>
+          </View>
+        </View>
+
+        <View style={[styles.propsGrid, { marginTop: 8 }]}>
+          <View style={styles.propItem}>
+            <Text style={styles.propLabel}>Compression ||</Text>
+            <Text style={styles.propValue}>
+              {species.mechanicalProperties.compressionParallelMpa}
+            </Text>
+          </View>
+          <View style={styles.propItem}>
+            <Text style={styles.propLabel}>Janka Hardness</Text>
+            <Text style={styles.propValue}>
+              {species.mechanicalProperties.hardnessKn}
+            </Text>
+          </View>
+          <View style={styles.propItem}>
+            <Text style={styles.propLabel}>Price Tier</Text>
+            <Text style={[styles.propValue, { color: '#2D6A4F' }]}>
+              {species.pricePerBoardFootPhp.priceTier}
+            </Text>
           </View>
         </View>
 
@@ -124,6 +150,22 @@ export default function SpeciesDetailScreen() {
             </Text>
           </View>
         )}
+      </View>
+
+      {/* ── Crafted Materials & Products Breakdown ── */}
+      <Text style={styles.sectionTitle}>Permissible Crafted Materials & Products</Text>
+      <View style={styles.card}>
+        <Text style={styles.cardSubText}>
+          Manufacturable products and high-value wooden items suited for this species:
+        </Text>
+        <View style={styles.productsGrid}>
+          {species.permissibleCraftedProducts.map((prod, index) => (
+            <View key={index} style={styles.productChip}>
+              <Ionicons name="hammer-outline" size={14} color="#2D6A4F" />
+              <Text style={styles.productChipText}>{prod}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       {/* ── Grain & Texture ── */}
@@ -145,14 +187,14 @@ export default function SpeciesDetailScreen() {
         ))}
       </View>
 
-      {/* ── Recommender CTA ── */}
+      {/* ── Estimator CTA ── */}
       <TouchableOpacity
         style={styles.recommenderCta}
-        onPress={() => router.push('/recommend')}
+        onPress={() => router.push('/estimator')}
         activeOpacity={0.85}
       >
-        <Ionicons name="swap-horizontal" size={18} color="#1B4332" />
-        <Text style={styles.recommenderCtaText}>Test in Two-Way Recommender</Text>
+        <Ionicons name="calculator" size={18} color="#1B4332" />
+        <Text style={styles.recommenderCtaText}>Calculate Budget in Estimator</Text>
       </TouchableOpacity>
 
       {/* ── Modals ── */}
@@ -234,6 +276,18 @@ const styles = StyleSheet.create({
   heroFooter: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  pricePill: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+  },
+  pricePillText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   sectionTitle: {
     fontSize: 16,
@@ -252,6 +306,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.07,
     shadowRadius: 8,
     elevation: 2,
+  },
+  cardSubText: {
+    color: '#52796F',
+    fontSize: 12,
+    marginBottom: 12,
+  },
+  productsGrid: {
+    gap: 8,
+  },
+  productChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#EEF9F4',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#B7E4CC',
+  },
+  productChipText: {
+    color: '#1B4332',
+    fontSize: 13,
+    fontWeight: '600',
   },
   exportBtn: {
     backgroundColor: '#2D6A4F',

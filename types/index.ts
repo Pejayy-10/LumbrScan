@@ -34,7 +34,37 @@ export type SafetyRating =
   | 'PROHIBITED_UNSAFE';
 
 // -----------------------------------------------------------------------------
-// 1. CONDITION ASSESSMENT INPUT DATA
+// 1. AUTOMATED AI DEFECT DETECTION & REMEDIATION
+// -----------------------------------------------------------------------------
+export interface AutomatedDefectItem {
+  defectType: DefectType;
+  label: string;
+  severity: SeverityLevel;
+  confidenceScore: number;
+  penaltyPoints: number;
+}
+
+export interface AutomatedDefectDetection {
+  hasDefects: boolean;
+  overallSeverity: SeverityLevel;
+  detectedDefects: AutomatedDefectItem[];
+  remediationRecommendations: string[];
+}
+
+export interface SevereDefectFallback {
+  warningBadgeTitle: 'UNSAFE FOR STRUCTURAL USE';
+  warningMessage: string;
+  suggestedAlternativeSpecies: {
+    id: string;
+    commonName: string;
+    botanicalName: string;
+    fprdiGroup: FprdiGroupCode;
+    reason: string;
+  }[];
+}
+
+// -----------------------------------------------------------------------------
+// 2. CONDITION ASSESSMENT INPUT & EVALUATION
 // -----------------------------------------------------------------------------
 export interface ConditionAssessmentInput {
   hasDecayOrRot: boolean;
@@ -60,7 +90,7 @@ export interface ConditionEvaluationResult {
 }
 
 // -----------------------------------------------------------------------------
-// 2. AI PREDICTION RESPONSE & SPECIES MATCH
+// 3. AI PREDICTION RESPONSE & SPECIES MATCH
 // -----------------------------------------------------------------------------
 export interface SpeciesMatch {
   id: string;
@@ -84,7 +114,8 @@ export interface PredictionPayload {
   imageUri: string;
   croppedUri?: string;
   modalityType: ModalityType;
-  conditionAssessment: ConditionAssessmentInput;
+  conditionAssessment?: ConditionAssessmentInput;
+  intendedApplication?: string;
 }
 
 export interface PredictionResponse {
@@ -100,12 +131,21 @@ export interface PredictionResponse {
     denrRegulatoryStatus: DenrBadge;
     speciesInfo: TimberSpecies;
   };
-  conditionEvaluation: ConditionEvaluationResult;
+  automatedDefectDetection: AutomatedDefectDetection;
+  structuralAssessment: {
+    nominalFprdiGroup: FprdiGroupCode;
+    effectiveFprdiGroup: FprdiGroupCode;
+    totalPenaltyPoints: number;
+    safetyRating: SafetyRating;
+    isSafeForIntendedUse: boolean;
+    severeDefectFallback?: SevereDefectFallback | null;
+  };
+  conditionEvaluation?: ConditionEvaluationResult;
   twoWayRecommendation: TwoWayRecommendationResult;
 }
 
 // -----------------------------------------------------------------------------
-// 3. TWO-WAY RECOMMENDATION ENGINE PAYLOADS
+// 4. TWO-WAY RECOMMENDATION ENGINE & TIMBER ESTIMATOR
 // -----------------------------------------------------------------------------
 export interface PermissibleApplication {
   applicationCode: string;
@@ -151,8 +191,54 @@ export interface TwoWayRecommendationResult {
   taskToMaterial?: TaskToMaterialResult;
 }
 
+export interface EstimatorSpeciesOption {
+  speciesId: string;
+  commonName: string;
+  botanicalName: string;
+  fprdiGroup: FprdiGroupCode;
+  pricePerBoardFootPhp: number;
+  totalEstimatedCostPhp: number;
+  withinBudget: boolean;
+  priceTier: 'ECONOMY' | 'MID_RANGE' | 'PREMIUM' | 'LUXURY';
+  suitabilityRank: number;
+  recommendationReason: string;
+}
+
+export interface EstimatorRequestPayload {
+  constructionTask: string;
+  estimatedBoardFeet: number;
+  maxBudgetPhp: number;
+}
+
+export interface EstimatorResponsePayload {
+  status: 'SUCCESS' | 'ERROR';
+  userTask: string;
+  requiredFprdiGroup: FprdiGroupCode;
+  estimatedBoardFeet: number;
+  maxBudgetPhp: number;
+  suitableSpeciesOptions: EstimatorSpeciesOption[];
+}
+
 // -----------------------------------------------------------------------------
-// 4. API CLIENT INTERFACE CONTRACT
+// 5. LOCAL HISTORY LOG RECORD
+// -----------------------------------------------------------------------------
+export interface HistoryLogRecord {
+  id: string; // Unique scan UUID / timestamp string
+  timestamp: string; // ISO 8601 string
+  imageUri: string;
+  speciesId: string;
+  commonName: string;
+  botanicalName: string;
+  confidenceScore: number;
+  detectedDefectsSummary: string;
+  overallDefectSeverity: SeverityLevel;
+  effectiveFprdiGroup: FprdiGroupCode;
+  safetyRating: SafetyRating;
+  remediationCount: number;
+}
+
+// -----------------------------------------------------------------------------
+// 6. API CLIENT INTERFACE CONTRACT
 // -----------------------------------------------------------------------------
 export interface LumbrScanApiClient {
   predictSpecies: (payload: PredictionPayload) => Promise<PredictionResponse>;
@@ -160,4 +246,7 @@ export interface LumbrScanApiClient {
     applicationCode: string,
     budgetFilter?: string
   ) => Promise<TaskToMaterialResult>;
+  calculateBudgetEstimate: (
+    payload: EstimatorRequestPayload
+  ) => Promise<EstimatorResponsePayload>;
 }
