@@ -11,17 +11,24 @@ import {
   TextInput,
   Image,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPECIES_DICTIONARY } from '../../constants/domain';
 import { FprdiBadge } from '../../components/ui/FprdiBadge';
+import { useOnboardingStore } from '../../stores/useOnboardingStore';
 
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const hasCompletedOnboarding = useOnboardingStore((state) => state.hasCompletedOnboarding);
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'NATIVE' | 'PLANTATION'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Declarative redirect — only fires after the navigator tree is fully mounted
+  if (!hasCompletedOnboarding) {
+    return <Redirect href="/onboarding" />;
+  }
 
   const speciesList = Object.values(SPECIES_DICTIONARY);
 
