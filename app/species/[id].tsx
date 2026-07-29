@@ -1,5 +1,5 @@
 // LumbrScan Detailed Species Profile & Regulatory View Screen
-// Deep Emerald Glassmorphism Theme
+// TripGlide Light & Dark Pill Aesthetic
 
 import React, { useState } from 'react';
 import {
@@ -60,7 +60,7 @@ export default function SpeciesDetailScreen() {
         <Text style={styles.heroCommonName}>{species.commonName}</Text>
         <Text style={styles.heroBotanical}>{species.botanicalName}</Text>
         <Text style={styles.heroLocal}>
-          <Text style={{ color: '#95A99E' }}>Local Name: </Text>
+          <Text style={{ color: '#6B7280' }}>Local Name: </Text>
           {species.localName}
         </Text>
 
@@ -83,27 +83,27 @@ export default function SpeciesDetailScreen() {
         onPress={() => setIsReportModalOpen(true)}
         activeOpacity={0.85}
       >
-        <MaterialCommunityIcons name="file-certificate" size={20} color="#0B1D15" />
+        <MaterialCommunityIcons name="file-certificate" size={20} color="#FFFFFF" />
         <Text style={styles.exportBtnText}>Generate Field Inspection & Decision Report</Text>
       </TouchableOpacity>
 
-      {/* ── DENR Regulatory Status ── */}
+      {/* ── DENR Legal Regulatory Status ── */}
       <Text style={styles.sectionTitle}>DENR Legal Regulatory Status</Text>
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         <DenrBadge statusCode={species.denrStatus} showNotice={true} />
         <TouchableOpacity
           style={styles.permitBtn}
           onPress={() => setIsPermitModalOpen(true)}
           activeOpacity={0.8}
         >
-          <MaterialCommunityIcons name="file-document-outline" size={17} color="#74C69D" />
+          <MaterialCommunityIcons name="file-document-outline" size={17} color="#1A1D1F" />
           <Text style={styles.permitBtnText}>View DENR Permit & CTO Application Workflow</Text>
         </TouchableOpacity>
       </View>
 
       {/* ── FPRDI Mechanical & Physical Properties ── */}
       <Text style={styles.sectionTitle}>FPRDI Mechanical & Physical Properties</Text>
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         <Text style={styles.fprdiDesc}>{fprdi.description}</Text>
 
         <View style={styles.propsGrid}>
@@ -136,7 +136,7 @@ export default function SpeciesDetailScreen() {
           </View>
           <View style={styles.propItem}>
             <Text style={styles.propLabel}>Price Tier</Text>
-            <Text style={[styles.propValue, { color: '#F59E0B' }]}>
+            <Text style={[styles.propValue, { color: '#D97706' }]}>
               {species.pricePerBoardFootPhp.priceTier}
             </Text>
           </View>
@@ -144,7 +144,7 @@ export default function SpeciesDetailScreen() {
 
         {totalPenalty > 0 && (
           <View style={styles.penaltyBanner}>
-            <Ionicons name="alert-circle" size={16} color="#F87171" />
+            <Ionicons name="alert-circle" size={16} color="#DC2626" />
             <Text style={styles.penaltyText}>
               Effective Group: {effectiveFprdiGroup} (−{totalPenalty} defect penalty applied)
             </Text>
@@ -154,14 +154,14 @@ export default function SpeciesDetailScreen() {
 
       {/* ── Crafted Materials & Products Breakdown ── */}
       <Text style={styles.sectionTitle}>Permissible Crafted Materials & Products</Text>
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         <Text style={styles.cardSubText}>
           Manufacturable products and high-value wooden items suited for this species:
         </Text>
         <View style={styles.productsGrid}>
           {species.permissibleCraftedProducts.map((prod, index) => (
             <View key={index} style={styles.productChip}>
-              <Ionicons name="hammer-outline" size={14} color="#74C69D" />
+              <Ionicons name="hammer-outline" size={14} color="#10B981" />
               <Text style={styles.productChipText}>{prod}</Text>
             </View>
           ))}
@@ -170,17 +170,17 @@ export default function SpeciesDetailScreen() {
 
       {/* ── Grain & Texture ── */}
       <Text style={styles.sectionTitle}>Grain & Visual Texture</Text>
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         <Text style={styles.grainText}>{species.grainCharacteristics}</Text>
       </View>
 
       {/* ── Primary Construction Uses ── */}
       <Text style={styles.sectionTitle}>Primary Construction Uses</Text>
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         {species.primaryUses.map((use, index) => (
           <View key={index} style={styles.useRow}>
             <View style={styles.useCheck}>
-              <Ionicons name="checkmark" size={12} color="#0B1D15" />
+              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
             </View>
             <Text style={styles.useText}>{use}</Text>
           </View>
@@ -193,7 +193,7 @@ export default function SpeciesDetailScreen() {
         onPress={() => router.push('/estimator')}
         activeOpacity={0.85}
       >
-        <Ionicons name="calculator" size={18} color="#0B1D15" />
+        <Ionicons name="calculator" size={18} color="#FFFFFF" />
         <Text style={styles.recommenderCtaText}>Calculate Budget in Estimator</Text>
       </TouchableOpacity>
 
@@ -222,56 +222,52 @@ export default function SpeciesDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1D15',
+    backgroundColor: '#F4F6F8',
   },
   content: {
     padding: 16,
     paddingBottom: 40,
   },
   heroCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.85)',
-    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 22,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.3)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   categoryBadge: {
-    backgroundColor: 'rgba(116, 198, 157, 0.15)',
+    backgroundColor: '#1A1D1F',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 20,
+    borderRadius: 14,
     alignSelf: 'flex-start',
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.3)',
   },
   categoryBadgeText: {
-    color: '#74C69D',
+    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
   },
   heroCommonName: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 26,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   heroBotanical: {
-    color: '#74C69D',
+    color: '#10B981',
     fontSize: 15,
     fontStyle: 'italic',
     marginTop: 4,
     marginBottom: 6,
   },
   heroLocal: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 13,
     marginBottom: 16,
   },
@@ -281,35 +277,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   pricePill: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   pricePillText: {
-    color: '#F59E0B',
+    color: '#D97706',
     fontSize: 12,
     fontWeight: '800',
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     marginTop: 8,
     marginBottom: 10,
   },
-  glassCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
-    borderRadius: 18,
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 16,
     marginBottom: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   cardSubText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 12,
     marginBottom: 12,
   },
@@ -320,35 +317,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(116, 198, 157, 0.12)',
+    backgroundColor: '#ECFDF5',
     paddingHorizontal: 12,
     paddingVertical: 9,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.25)',
+    borderRadius: 12,
   },
   productChipText: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 13,
     fontWeight: '600',
   },
   exportBtn: {
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 15,
-    borderRadius: 14,
+    borderRadius: 20,
     marginBottom: 18,
     gap: 8,
-    shadowColor: '#74C69D',
+    shadowColor: '#1A1D1F',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 4,
   },
   exportBtnText: {
-    color: '#0B1D15',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
   },
@@ -358,19 +353,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 11,
     marginTop: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.3)',
-    backgroundColor: 'rgba(116, 198, 157, 0.12)',
+    borderColor: '#E5E7EB',
+    backgroundColor: '#F9FAFB',
     gap: 6,
   },
   permitBtnText: {
-    color: '#74C69D',
+    color: '#1A1D1F',
     fontSize: 13,
     fontWeight: '700',
   },
   fprdiDesc: {
-    color: '#95A99E',
+    color: '#4B5563',
     fontSize: 13,
     lineHeight: 19,
     marginBottom: 14,
@@ -381,14 +376,14 @@ const styles = StyleSheet.create({
   },
   propItem: {
     flex: 1,
-    backgroundColor: 'rgba(11, 29, 21, 0.6)',
+    backgroundColor: '#F9FAFB',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    borderColor: '#E5E7EB',
   },
   propLabel: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -396,7 +391,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   propValue: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 12,
     fontWeight: '700',
   },
@@ -406,19 +401,19 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 12,
     padding: 10,
-    backgroundColor: 'rgba(239, 68, 68, 0.12)',
-    borderRadius: 10,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: '#FECACA',
   },
   penaltyText: {
-    color: '#F87171',
+    color: '#DC2626',
     fontSize: 12,
     fontWeight: '700',
     flex: 1,
   },
   grainText: {
-    color: '#95A99E',
+    color: '#4B5563',
     fontSize: 13,
     lineHeight: 19,
   },
@@ -432,28 +427,28 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 6,
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
     alignItems: 'center',
     justifyContent: 'center',
   },
   useText: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 14,
     fontWeight: '500',
     flex: 1,
   },
   recommenderCta: {
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 15,
-    borderRadius: 14,
+    borderRadius: 20,
     marginTop: 14,
     gap: 8,
   },
   recommenderCtaText: {
-    color: '#0B1D15',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
   },

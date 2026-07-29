@@ -1,5 +1,5 @@
 // LumbrScan Dedicated Scan History Logs Screen
-// Deep Emerald Glassmorphism Theme
+// TripGlide Light & Dark Pill Aesthetic
 
 import React, { useState } from 'react';
 import {
@@ -63,24 +63,24 @@ export default function HistoryScreen() {
             onPress={handleClearAll}
             activeOpacity={0.7}
           >
-            <Ionicons name="trash-outline" size={18} color="#F87171" />
+            <Ionicons name="trash-outline" size={18} color="#DC2626" />
           </TouchableOpacity>
         )}
       </View>
 
       {/* ── Search Bar ── */}
       <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={18} color="#74C69D" />
+        <Ionicons name="search-outline" size={18} color="#6B7280" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search history by species or defect..."
-          placeholderTextColor="#95A99E"
+          placeholderTextColor="#9CA3AF"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={16} color="#95A99E" />
+            <Ionicons name="close-circle" size={16} color="#9CA3AF" />
           </TouchableOpacity>
         )}
       </View>
@@ -110,14 +110,14 @@ export default function HistoryScreen() {
 
             <View style={styles.metaRow}>
               <View style={styles.metaBadge}>
-                <Ionicons name="sparkles" size={12} color="#74C69D" />
+                <Ionicons name="sparkles" size={12} color="#10B981" />
                 <Text style={styles.metaBadgeText}>
                   {Math.round(log.confidenceScore * 100)}% Match
                 </Text>
               </View>
 
               <View style={styles.metaBadge}>
-                <Ionicons name="calendar-outline" size={12} color="#95A99E" />
+                <Ionicons name="calendar-outline" size={12} color="#6B7280" />
                 <Text style={styles.metaText}>{dateStr}</Text>
               </View>
 
@@ -126,9 +126,7 @@ export default function HistoryScreen() {
                   styles.safetyPill,
                   {
                     backgroundColor:
-                      log.safetyRating === 'SAFE'
-                        ? 'rgba(16, 185, 129, 0.15)'
-                        : 'rgba(239, 68, 68, 0.15)',
+                      log.safetyRating === 'SAFE' ? '#ECFDF5' : '#FEF2F2',
                   },
                 ]}
               >
@@ -137,7 +135,7 @@ export default function HistoryScreen() {
                     styles.safetyPillText,
                     {
                       color:
-                        log.safetyRating === 'SAFE' ? '#74C69D' : '#F87171',
+                        log.safetyRating === 'SAFE' ? '#065F46' : '#991B1B',
                     },
                   ]}
                 >
@@ -158,7 +156,7 @@ export default function HistoryScreen() {
                 onPress={() => deleteLog(log.id)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Ionicons name="trash-outline" size={16} color="#95A99E" />
+                <Ionicons name="trash-outline" size={16} color="#9CA3AF" />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -167,7 +165,7 @@ export default function HistoryScreen() {
 
       {filteredLogs.length === 0 && (
         <View style={styles.emptyState}>
-          <Ionicons name="time-outline" size={48} color="#74C69D" />
+          <Ionicons name="time-outline" size={48} color="#9CA3AF" />
           <Text style={styles.emptyTitle}>No history logs found</Text>
           <Text style={styles.emptySub}>
             Past timber classification and condition scans will appear here.
@@ -181,7 +179,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1D15',
+    backgroundColor: '#F4F6F8',
   },
   content: {
     paddingHorizontal: 20,
@@ -195,48 +193,54 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#95A99E',
+    color: '#6B7280',
   },
   clearBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: '#FEF2F2',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: '#FECACA',
   },
   searchBox: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 16,
+    borderRadius: 24,
     gap: 10,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 14,
   },
   logCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
-    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   logHeader: {
     flexDirection: 'row',
@@ -251,11 +255,11 @@ const styles = StyleSheet.create({
   speciesName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
   },
   botanicalName: {
     fontSize: 12,
-    color: '#74C69D',
+    color: '#10B981',
     fontStyle: 'italic',
     marginTop: 1,
   },
@@ -270,20 +274,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(11, 29, 21, 0.6)',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    borderRadius: 8,
   },
   metaBadgeText: {
-    color: '#74C69D',
+    color: '#10B981',
     fontSize: 11,
     fontWeight: '700',
   },
   metaText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 11,
   },
   safetyPill: {
@@ -296,7 +298,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   defectText: {
-    color: '#95A99E',
+    color: '#4B5563',
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
@@ -307,10 +309,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(116, 198, 157, 0.12)',
+    borderTopColor: '#F3F4F6',
   },
   remedyText: {
-    color: '#74C69D',
+    color: '#10B981',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -321,13 +323,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     marginTop: 12,
     marginBottom: 4,
   },
   emptySub: {
     fontSize: 13,
-    color: '#95A99E',
+    color: '#6B7280',
     textAlign: 'center',
   },
 });

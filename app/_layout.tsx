@@ -1,32 +1,45 @@
-// LumbrScan Root Layout — Deep Emerald Glassmorphism Theme
+// LumbrScan Root Layout — TripGlide Soft Light Theme
 
-import React from 'react';
-import { Stack } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useOnboardingStore } from '../stores/useOnboardingStore';
 
 export default function RootLayout() {
+  const router = useRouter();
+  const segments = useSegments();
+  const hasCompletedOnboarding = useOnboardingStore((state) => state.hasCompletedOnboarding);
+
+  useEffect(() => {
+    const inOnboardingGroup = segments[0] === 'onboarding';
+    if (!hasCompletedOnboarding && !inOnboardingGroup) {
+      router.replace('/onboarding');
+    }
+  }, [hasCompletedOnboarding, segments]);
+
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#0F281E',
+            backgroundColor: '#FFFFFF',
           },
-          headerTintColor: '#FFFFFF',
+          headerTintColor: '#1A1D1F',
           headerTitleStyle: {
             fontWeight: '800',
             fontSize: 17,
-            color: '#FFFFFF',
+            color: '#1A1D1F',
           },
           headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: '#0B1D15',
+            backgroundColor: '#F4F6F8',
           },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen
           name="species/[id]"
           options={{

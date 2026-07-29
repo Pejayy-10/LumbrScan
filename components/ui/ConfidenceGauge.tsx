@@ -1,5 +1,5 @@
 // LumbrScan AI Species Match Confidence Gauge Component
-// Deep Emerald Glassmorphism Theme
+// TripGlide Light & Dark Pill Aesthetic
 
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
@@ -25,9 +25,9 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
   }, [confidenceScore]);
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.85) return '#74C69D';
+    if (score >= 0.85) return '#10B981';
     if (score >= 0.65) return '#F59E0B';
-    return '#F87171';
+    return '#DC2626';
   };
 
   const scoreColor = getScoreColor(confidenceScore);
@@ -63,12 +63,15 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    backgroundColor: '#FFFFFF',
     padding: 16,
-    borderRadius: 18,
+    borderRadius: 24,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   headerRow: {
     flexDirection: 'row',
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 14,
     fontWeight: '800',
   },
@@ -87,23 +90,21 @@ const styles = StyleSheet.create({
   },
   track: {
     height: 10,
-    backgroundColor: 'rgba(11, 29, 21, 0.7)',
+    backgroundColor: '#F3F4F6',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.15)',
   },
   fill: {
     height: '100%',
     borderRadius: 5,
   },
   footerNote: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 12,
   },
   boldText: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontWeight: '700',
   },
 });

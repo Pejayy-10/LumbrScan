@@ -1,5 +1,5 @@
 // LumbrScan Dedicated Budgeting & Timber Estimator Page
-// Deep Emerald Glassmorphism Theme
+// TripGlide Light & Dark Pill Aesthetic
 
 import React, { useEffect } from 'react';
 import {
@@ -58,7 +58,7 @@ export default function EstimatorScreen() {
       </Text>
 
       {/* ── Form Card ── */}
-      <View style={styles.glassCard}>
+      <View style={styles.card}>
         {/* Task Selector */}
         <Text style={styles.inputLabel}>1. Select Target Construction Application</Text>
         <ScrollView
@@ -77,7 +77,6 @@ export default function EstimatorScreen() {
               onPress={() => setSelectedTaskCode(app.code)}
               activeOpacity={0.8}
             >
-              {selectedTaskCode === app.code && <View style={styles.activeDot} />}
               <Text
                 style={[
                   styles.taskChipText,
@@ -91,10 +90,10 @@ export default function EstimatorScreen() {
         </ScrollView>
 
         <View style={styles.reqBox}>
-          <Ionicons name="information-circle" size={16} color="#74C69D" />
+          <Ionicons name="information-circle" size={16} color="#10B981" />
           <Text style={styles.reqText}>
             Minimum Strength Required:{' '}
-            <Text style={{ fontWeight: '800', color: '#FFFFFF' }}>
+            <Text style={{ fontWeight: '800', color: '#1A1D1F' }}>
               {activeApp.minimumFprdiGroup}
             </Text>
           </Text>
@@ -106,7 +105,7 @@ export default function EstimatorScreen() {
           <View style={styles.inputCol}>
             <Text style={styles.inputLabel}>2. Quantity (bd. ft.)</Text>
             <View style={styles.inputBox}>
-              <Ionicons name="cube-outline" size={18} color="#74C69D" />
+              <Ionicons name="cube-outline" size={18} color="#6B7280" />
               <TextInput
                 style={styles.textInput}
                 keyboardType="numeric"
@@ -146,10 +145,10 @@ export default function EstimatorScreen() {
           activeOpacity={0.85}
         >
           {isCalculating ? (
-            <ActivityIndicator color="#0B1D15" />
+            <ActivityIndicator color="#FFFFFF" />
           ) : (
             <>
-              <Ionicons name="calculator-outline" size={18} color="#0B1D15" />
+              <Ionicons name="calculator-outline" size={18} color="#FFFFFF" />
               <Text style={styles.calcBtnText}>Calculate & Rank Suitable Timber</Text>
             </>
           )}
@@ -168,18 +167,12 @@ export default function EstimatorScreen() {
 
       {isCalculating ? (
         <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color="#74C69D" />
+          <ActivityIndicator size="large" color="#1A1D1F" />
           <Text style={styles.loadingText}>Ranking species against budget & FPRDI rating…</Text>
         </View>
       ) : (
         estimationResult?.suitableSpeciesOptions.map((opt, index) => (
-          <View
-            key={opt.speciesId}
-            style={[
-              styles.optionCard,
-              opt.withinBudget && opt.suitabilityRank === 1 && styles.bestMatchCard,
-            ]}
-          >
+          <View key={opt.speciesId} style={styles.optionCard}>
             <View style={styles.optionHeader}>
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>#{index + 1}</Text>
@@ -202,7 +195,7 @@ export default function EstimatorScreen() {
                 <Text
                   style={[
                     styles.metricVal,
-                    { color: opt.withinBudget ? '#74C69D' : '#F87171' },
+                    { color: opt.withinBudget ? '#10B981' : '#DC2626' },
                   ]}
                 >
                   ₱{opt.totalEstimatedCostPhp.toLocaleString()}
@@ -213,21 +206,19 @@ export default function EstimatorScreen() {
                 style={[
                   styles.statusPill,
                   {
-                    backgroundColor: opt.withinBudget
-                      ? 'rgba(16, 185, 129, 0.15)'
-                      : 'rgba(239, 68, 68, 0.15)',
+                    backgroundColor: opt.withinBudget ? '#ECFDF5' : '#FEF2F2',
                   },
                 ]}
               >
                 <Ionicons
                   name={opt.withinBudget ? 'checkmark-circle' : 'close-circle'}
                   size={14}
-                  color={opt.withinBudget ? '#74C69D' : '#F87171'}
+                  color={opt.withinBudget ? '#10B981' : '#DC2626'}
                 />
                 <Text
                   style={[
                     styles.statusPillText,
-                    { color: opt.withinBudget ? '#74C69D' : '#F87171' },
+                    { color: opt.withinBudget ? '#065F46' : '#991B1B' },
                   ]}
                 >
                   {opt.withinBudget ? 'WITHIN BUDGET' : 'EXCEEDS'}
@@ -243,7 +234,7 @@ export default function EstimatorScreen() {
               activeOpacity={0.8}
             >
               <Text style={styles.profileLinkText}>View Full Profile & Products</Text>
-              <Ionicons name="chevron-forward" size={14} color="#74C69D" />
+              <Ionicons name="chevron-forward" size={14} color="#1A1D1F" />
             </TouchableOpacity>
           </View>
         ))
@@ -255,7 +246,7 @@ export default function EstimatorScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1D15',
+    backgroundColor: '#F4F6F8',
   },
   content: {
     paddingHorizontal: 20,
@@ -263,27 +254,30 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#95A99E',
+    color: '#6B7280',
     marginBottom: 18,
   },
-  glassCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
-    borderRadius: 20,
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 18,
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   inputLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#95A99E',
+    color: '#6B7280',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -292,28 +286,19 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   taskChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 20,
-    backgroundColor: 'rgba(11, 29, 21, 0.6)',
+    backgroundColor: '#F3F4F6',
     borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
-    gap: 6,
+    borderColor: '#E5E7EB',
   },
   taskChipActive: {
-    backgroundColor: '#2D6A4F',
-    borderColor: '#74C69D',
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
+    borderColor: '#1A1D1F',
   },
   taskChipText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -325,15 +310,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(116, 198, 157, 0.12)',
+    backgroundColor: '#ECFDF5',
     padding: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.25)',
   },
   reqText: {
-    color: '#74C69D',
+    color: '#065F46',
     fontSize: 12,
     flex: 1,
   },
@@ -348,41 +331,41 @@ const styles = StyleSheet.create({
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(11, 29, 21, 0.7)',
+    backgroundColor: '#F9FAFB',
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.25)',
+    borderColor: '#E5E7EB',
     gap: 6,
   },
   textInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 15,
     fontWeight: '700',
   },
   currencySymbol: {
-    color: '#74C69D',
+    color: '#10B981',
     fontSize: 16,
     fontWeight: '800',
   },
   unitText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 12,
     fontWeight: '600',
   },
   calcBtn: {
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: 20,
     gap: 8,
   },
   calcBtnText: {
-    color: '#0B1D15',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
   },
@@ -395,11 +378,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
   },
   resultCount: {
     fontSize: 12,
-    color: '#95A99E',
+    color: '#6B7280',
   },
   loadingWrap: {
     alignItems: 'center',
@@ -407,20 +390,19 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 13,
   },
   optionCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
-    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
-  },
-  bestMatchCard: {
-    borderColor: '#74C69D',
-    backgroundColor: 'rgba(20, 46, 34, 0.9)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   optionHeader: {
     flexDirection: 'row',
@@ -432,14 +414,12 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: 'rgba(116, 198, 157, 0.15)',
+    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.3)',
   },
   rankText: {
-    color: '#74C69D',
+    color: '#1A1D1F',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -447,12 +427,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   commonName: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 16,
     fontWeight: '800',
   },
   botanicalName: {
-    color: '#74C69D',
+    color: '#10B981',
     fontSize: 12,
     fontStyle: 'italic',
   },
@@ -460,22 +440,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(11, 29, 21, 0.6)',
+    backgroundColor: '#F9FAFB',
     padding: 10,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 10,
   },
   priceMetric: {
     flex: 1,
   },
   metricLabel: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   metricVal: {
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 14,
     fontWeight: '800',
     marginTop: 2,
@@ -493,7 +473,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   reasonText: {
-    color: '#95A99E',
+    color: '#4B5563',
     fontSize: 12,
     lineHeight: 17,
     marginBottom: 10,
@@ -504,10 +484,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(116, 198, 157, 0.12)',
+    borderTopColor: '#F3F4F6',
   },
   profileLinkText: {
-    color: '#74C69D',
+    color: '#1A1D1F',
     fontSize: 12,
     fontWeight: '700',
   },

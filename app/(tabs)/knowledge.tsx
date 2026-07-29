@@ -1,5 +1,5 @@
 // LumbrScan Module 3: Knowledge Base & Species Catalog Screen
-// Deep Emerald Glassmorphism Theme
+// TripGlide Sample Aesthetic — Soft light canvas, dark charcoal pills
 
 import React, { useState } from 'react';
 import {
@@ -57,22 +57,22 @@ export default function KnowledgeScreen() {
 
       {/* ── Search Bar ── */}
       <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={20} color="#74C69D" />
+        <Ionicons name="search-outline" size={18} color="#6B7280" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search by common or botanical name..."
-          placeholderTextColor="#95A99E"
+          placeholderTextColor="#9CA3AF"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={18} color="#95A99E" />
+            <Ionicons name="close-circle" size={18} color="#9CA3AF" />
           </TouchableOpacity>
         )}
       </View>
 
-      {/* ── Dribbble-Style Pill Filter Bar ── */}
+      {/* ── Dark Pill Filter Bar ── */}
       <View style={styles.tabRow}>
         {(
           [
@@ -87,7 +87,6 @@ export default function KnowledgeScreen() {
             onPress={() => setActiveCategory(tab.id)}
             activeOpacity={0.8}
           >
-            {activeCategory === tab.id && <View style={styles.activeDot} />}
             <Text
               style={[styles.tabText, activeCategory === tab.id && styles.tabTextActive]}
             >
@@ -97,44 +96,42 @@ export default function KnowledgeScreen() {
         ))}
       </View>
 
-      {/* ── Species Glass Cards ── */}
+      {/* ── Species Cards ── */}
       {filteredSpecies.map((species: TimberSpecies) => (
         <TouchableOpacity
           key={species.id}
-          style={styles.glassCard}
+          style={styles.card}
           onPress={() => router.push(`/species/${species.id}`)}
           activeOpacity={0.85}
         >
-          <View style={styles.accentBar} />
+          <View style={styles.cardHeader}>
+            <View style={styles.cardHeaderLeft}>
+              <Text style={styles.commonName}>{species.commonName}</Text>
+              <Text style={styles.botanicalName}>{species.botanicalName}</Text>
+            </View>
+            <FprdiBadge groupCode={species.fprdiGroup} size="sm" />
+          </View>
 
-          <View style={styles.cardInner}>
-            <View style={styles.cardHeader}>
-              <View style={styles.cardHeaderLeft}>
-                <Text style={styles.commonName}>{species.commonName}</Text>
-                <Text style={styles.botanicalName}>{species.botanicalName}</Text>
+          <Text style={styles.grainText} numberOfLines={2}>
+            {species.grainCharacteristics}
+          </Text>
+
+          <DenrBadge statusCode={species.denrStatus} showNotice={false} />
+
+          <View style={styles.usesRow}>
+            {species.primaryUses.slice(0, 3).map((use, idx) => (
+              <View key={idx} style={styles.usePill}>
+                <Text style={styles.usePillText}>{use}</Text>
               </View>
-              <FprdiBadge groupCode={species.fprdiGroup} size="sm" />
-            </View>
+            ))}
+          </View>
 
-            <Text style={styles.grainText} numberOfLines={2}>
-              {species.grainCharacteristics}
+          <View style={styles.cardFooter}>
+            <Text style={styles.priceTag}>
+              ₱{species.pricePerBoardFootPhp.min}–₱{species.pricePerBoardFootPhp.max} / bd.ft
             </Text>
-
-            <DenrBadge statusCode={species.denrStatus} showNotice={false} />
-
-            <View style={styles.usesRow}>
-              {species.primaryUses.slice(0, 3).map((use, idx) => (
-                <View key={idx} style={styles.usePill}>
-                  <Text style={styles.usePillText}>{use}</Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.cardFooter}>
-              <Text style={styles.priceTag}>
-                ₱{species.pricePerBoardFootPhp.min}–₱{species.pricePerBoardFootPhp.max} / bd.ft
-              </Text>
-              <Ionicons name="chevron-forward" size={16} color="#74C69D" />
+            <View style={styles.arrowCircle}>
+              <Ionicons name="chevron-forward" size={14} color="#FFFFFF" />
             </View>
           </View>
         </TouchableOpacity>
@@ -142,7 +139,7 @@ export default function KnowledgeScreen() {
 
       {filteredSpecies.length === 0 && (
         <View style={styles.emptyState}>
-          <Ionicons name="search-outline" size={40} color="#74C69D" />
+          <Ionicons name="search-outline" size={40} color="#9CA3AF" />
           <Text style={styles.emptyTitle}>No species found</Text>
           <Text style={styles.emptyHint}>Try a different search term or clear the filter.</Text>
         </View>
@@ -154,7 +151,7 @@ export default function KnowledgeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1D15',
+    backgroundColor: '#F4F6F8',
   },
   content: {
     paddingHorizontal: 20,
@@ -162,30 +159,33 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#95A99E',
+    color: '#6B7280',
     marginBottom: 18,
   },
   searchBox: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 16,
+    borderRadius: 24,
     gap: 10,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     fontSize: 14,
   },
   tabRow: {
@@ -194,28 +194,19 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   tabPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(20, 46, 34, 0.6)',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
-    gap: 6,
+    borderColor: '#E5E7EB',
   },
   tabPillActive: {
-    backgroundColor: '#2D6A4F',
-    borderColor: '#74C69D',
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#74C69D',
+    backgroundColor: '#1A1D1F',
+    borderColor: '#1A1D1F',
   },
   tabText: {
-    color: '#95A99E',
+    color: '#6B7280',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -223,22 +214,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
-  glassCard: {
-    backgroundColor: 'rgba(20, 46, 34, 0.75)',
-    borderRadius: 18,
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 18,
     marginBottom: 12,
-    flexDirection: 'row',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.2)',
-  },
-  accentBar: {
-    width: 4,
-    backgroundColor: '#74C69D',
-  },
-  cardInner: {
-    flex: 1,
-    padding: 16,
+    shadowColor: '#1A1D1F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -253,16 +238,16 @@ const styles = StyleSheet.create({
   commonName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
   },
   botanicalName: {
     fontSize: 13,
-    color: '#74C69D',
+    color: '#10B981',
     fontStyle: 'italic',
     marginTop: 2,
   },
   grainText: {
-    color: '#95A99E',
+    color: '#4B5563',
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
@@ -274,15 +259,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   usePill: {
-    backgroundColor: 'rgba(116, 198, 157, 0.12)',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(116, 198, 157, 0.25)',
+    borderRadius: 8,
   },
   usePillText: {
-    color: '#74C69D',
+    color: '#1A1D1F',
     fontSize: 11,
     fontWeight: '600',
   },
@@ -293,12 +276,20 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(116, 198, 157, 0.12)',
+    borderTopColor: '#F3F4F6',
   },
   priceTag: {
     fontSize: 12,
-    color: '#F59E0B',
+    color: '#D97706',
     fontWeight: '700',
+  },
+  arrowCircle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#1A1D1F',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyState: {
     alignItems: 'center',
@@ -307,12 +298,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1D1F',
     marginTop: 12,
     marginBottom: 4,
   },
   emptyHint: {
     fontSize: 13,
-    color: '#95A99E',
+    color: '#6B7280',
   },
 });
