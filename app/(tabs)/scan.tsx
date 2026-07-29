@@ -136,6 +136,44 @@ export default function ScanScreen() {
   const automatedDefects = activeResult?.automatedDefectDetection;
   const severeFallback = activeResult?.structuralAssessment?.severeDefectFallback;
 
+  const manualDefects = [
+    {
+      label: 'Decay / Fungal Rot',
+      desc: 'Softened fibers (−2 FPRDI Group penalty)',
+      value: hasDecayOrRot,
+      toggle: toggleDecayOrRot,
+      danger: true,
+    },
+    {
+      label: 'End Splitting / Cracks',
+      desc: 'Separation along grain ends',
+      value: hasEndSplitting,
+      toggle: toggleEndSplitting,
+      danger: false,
+    },
+    {
+      label: 'Warping / Bowing',
+      desc: 'Dimensional curvature distortion',
+      value: hasWarping,
+      toggle: toggleWarping,
+      danger: false,
+    },
+    {
+      label: 'Unsound Loose Knots',
+      desc: 'Decayed or loose knot holes',
+      value: hasUnsoundKnots,
+      toggle: toggleUnsoundKnots,
+      danger: false,
+    },
+    {
+      label: 'Insect Boreholes',
+      desc: 'Termite or beetle damage galleries',
+      value: hasInsectBoreholes,
+      toggle: toggleInsectBoreholes,
+      danger: false,
+    },
+  ];
+
   return (
     <ScrollView
       style={styles.container}
@@ -222,6 +260,74 @@ export default function ScanScreen() {
             </TouchableOpacity>
           ))}
         </View>
+      </View>
+
+      {/* ── Manual Defect Verification & Checklist (Collapsible) ── */}
+      <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.collapsibleHeader}
+          onPress={() => setIsManualOverrideOpen(!isManualOverrideOpen)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.collapsibleLeft}>
+            <View style={[styles.cardBadge, { backgroundColor: '#FEF6E4' }]}>
+              <Text style={[styles.cardBadgeText, { color: '#D97706' }]}>MODULE 5</Text>
+            </View>
+            <Text style={styles.cardTitle}>Manual Defect Checklist & Override</Text>
+          </View>
+          <Ionicons
+            name={isManualOverrideOpen ? 'chevron-up' : 'chevron-down'}
+            size={20}
+            color="#2D6A4F"
+          />
+        </TouchableOpacity>
+
+        {isManualOverrideOpen && (
+          <View style={styles.manualBody}>
+            <Text style={styles.manualHint}>
+              Select physical defect flags to manually test or override AI condition assessment:
+            </Text>
+
+            {manualDefects.map((defect, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={[styles.defectRow, defect.value && styles.defectRowActive]}
+                onPress={defect.toggle}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.defectCheck,
+                    defect.value &&
+                      (defect.danger ? styles.defectCheckDanger : styles.defectCheckActive),
+                  ]}
+                >
+                  {defect.value && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+                </View>
+                <View style={styles.defectContent}>
+                  <Text style={styles.defectLabel}>{defect.label}</Text>
+                  <Text style={styles.defectDesc}>{defect.desc}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+
+            {/* Severity Selector */}
+            <Text style={[styles.subLabel, { marginTop: 12 }]}>Override Defect Severity Rating</Text>
+            <View style={styles.pillRow}>
+              {(['NONE', 'LOW', 'MODERATE', 'SEVERE'] as const).map((sev) => (
+                <TouchableOpacity
+                  key={sev}
+                  style={[styles.pill, defectSeverity === sev && styles.pillActive]}
+                  onPress={() => setDefectSeverity(sev as SeverityLevel)}
+                >
+                  <Text style={[styles.pillText, defectSeverity === sev && styles.pillTextActive]}>
+                    {sev}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
       </View>
 
       {/* ── Run AI Classification Button ── */}
@@ -405,6 +511,68 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#1B4332',
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  collapsibleLeft: {
+    flex: 1,
+  },
+  manualBody: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F5F2',
+  },
+  manualHint: {
+    color: '#52796F',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  defectRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F5F2',
+  },
+  defectRowActive: {
+    backgroundColor: 'rgba(45,106,79,0.04)',
+    borderRadius: 8,
+    paddingHorizontal: 6,
+  },
+  defectCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#D1EEE3',
+    backgroundColor: '#F4F8F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  defectCheckActive: {
+    backgroundColor: '#2D6A4F',
+    borderColor: '#2D6A4F',
+  },
+  defectCheckDanger: {
+    backgroundColor: '#DC2626',
+    borderColor: '#DC2626',
+  },
+  defectContent: {
+    flex: 1,
+  },
+  defectLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1B4332',
+  },
+  defectDesc: {
+    fontSize: 11,
+    color: '#52796F',
   },
   cropFrame: {
     width: '100%',
