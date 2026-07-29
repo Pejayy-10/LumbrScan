@@ -1,7 +1,7 @@
 // LumbrScan Root Layout — TripGlide Soft Light Theme
 
 import React, { useEffect } from 'react';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useOnboardingStore } from '../stores/useOnboardingStore';
@@ -9,14 +9,18 @@ import { useOnboardingStore } from '../stores/useOnboardingStore';
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const navigationState = useRootNavigationState();
   const hasCompletedOnboarding = useOnboardingStore((state) => state.hasCompletedOnboarding);
 
   useEffect(() => {
+    // Wait until the Root Layout navigation container has finished mounting
+    if (!navigationState?.key) return;
+
     const inOnboardingGroup = segments[0] === 'onboarding';
     if (!hasCompletedOnboarding && !inOnboardingGroup) {
       router.replace('/onboarding');
     }
-  }, [hasCompletedOnboarding, segments]);
+  }, [hasCompletedOnboarding, segments, navigationState?.key]);
 
   return (
     <SafeAreaProvider>
