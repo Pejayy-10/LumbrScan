@@ -1,5 +1,5 @@
 // LumbrScan Dedicated Budgeting & Timber Estimator Page
-// Light Nature Theme
+// Deep Emerald Glassmorphism Theme
 
 import React, { useEffect } from 'react';
 import {
@@ -11,7 +11,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useEstimatorStore } from '../../stores/useEstimatorStore';
@@ -51,14 +51,14 @@ export default function EstimatorScreen() {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      {/* ── Header ── */}
+      {/* ── Page Header ── */}
       <Text style={styles.pageTitle}>Timber Budget Estimator</Text>
       <Text style={styles.pageSubtitle}>
-        Evaluate FPRDI strength groups and price tiers against your budget envelope
+        Evaluate FPRDI strength groups and board-foot pricing against your budget envelope
       </Text>
 
       {/* ── Form Card ── */}
-      <View style={styles.formCard}>
+      <View style={styles.glassCard}>
         {/* Task Selector */}
         <Text style={styles.inputLabel}>1. Select Target Construction Application</Text>
         <ScrollView
@@ -77,6 +77,7 @@ export default function EstimatorScreen() {
               onPress={() => setSelectedTaskCode(app.code)}
               activeOpacity={0.8}
             >
+              {selectedTaskCode === app.code && <View style={styles.activeDot} />}
               <Text
                 style={[
                   styles.taskChipText,
@@ -90,10 +91,12 @@ export default function EstimatorScreen() {
         </ScrollView>
 
         <View style={styles.reqBox}>
-          <Ionicons name="information-circle" size={16} color="#2D6A4F" />
+          <Ionicons name="information-circle" size={16} color="#74C69D" />
           <Text style={styles.reqText}>
-            Minimum Structural Strength Required:{' '}
-            <Text style={{ fontWeight: '800' }}>{activeApp.minimumFprdiGroup}</Text>
+            Minimum Strength Required:{' '}
+            <Text style={{ fontWeight: '800', color: '#FFFFFF' }}>
+              {activeApp.minimumFprdiGroup}
+            </Text>
           </Text>
         </View>
 
@@ -101,9 +104,9 @@ export default function EstimatorScreen() {
         <View style={styles.inputsGrid}>
           {/* Board Feet Input */}
           <View style={styles.inputCol}>
-            <Text style={styles.inputLabel}>2. Estimated Quantity (bd. ft.)</Text>
+            <Text style={styles.inputLabel}>2. Quantity (bd. ft.)</Text>
             <View style={styles.inputBox}>
-              <Ionicons name="cube-outline" size={18} color="#40916C" />
+              <Ionicons name="cube-outline" size={18} color="#74C69D" />
               <TextInput
                 style={styles.textInput}
                 keyboardType="numeric"
@@ -119,7 +122,7 @@ export default function EstimatorScreen() {
 
           {/* Max Budget Input */}
           <View style={styles.inputCol}>
-            <Text style={styles.inputLabel}>3. Maximum Budget (PHP)</Text>
+            <Text style={styles.inputLabel}>3. Max Budget (PHP)</Text>
             <View style={styles.inputBox}>
               <Text style={styles.currencySymbol}>₱</Text>
               <TextInput
@@ -143,10 +146,10 @@ export default function EstimatorScreen() {
           activeOpacity={0.85}
         >
           {isCalculating ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color="#0B1D15" />
           ) : (
             <>
-              <Ionicons name="calculator-outline" size={18} color="#FFFFFF" />
+              <Ionicons name="calculator-outline" size={18} color="#0B1D15" />
               <Text style={styles.calcBtnText}>Calculate & Rank Suitable Timber</Text>
             </>
           )}
@@ -158,14 +161,14 @@ export default function EstimatorScreen() {
         <Text style={styles.sectionTitle}>Ranked Timber Options</Text>
         {estimationResult && (
           <Text style={styles.resultCount}>
-            {estimationResult.suitableSpeciesOptions.length} Options Evaluated
+            {estimationResult.suitableSpeciesOptions.length} Species Evaluated
           </Text>
         )}
       </View>
 
       {isCalculating ? (
         <View style={styles.loadingWrap}>
-          <ActivityIndicator size="large" color="#2D6A4F" />
+          <ActivityIndicator size="large" color="#74C69D" />
           <Text style={styles.loadingText}>Ranking species against budget & FPRDI rating…</Text>
         </View>
       ) : (
@@ -190,7 +193,7 @@ export default function EstimatorScreen() {
 
             <View style={styles.priceRow}>
               <View style={styles.priceMetric}>
-                <Text style={styles.metricLabel}>Price / bd.ft.</Text>
+                <Text style={styles.metricLabel}>Avg Price / bd.ft.</Text>
                 <Text style={styles.metricVal}>₱{opt.pricePerBoardFootPhp}</Text>
               </View>
 
@@ -199,7 +202,7 @@ export default function EstimatorScreen() {
                 <Text
                   style={[
                     styles.metricVal,
-                    { color: opt.withinBudget ? '#10B981' : '#DC2626' },
+                    { color: opt.withinBudget ? '#74C69D' : '#F87171' },
                   ]}
                 >
                   ₱{opt.totalEstimatedCostPhp.toLocaleString()}
@@ -209,21 +212,25 @@ export default function EstimatorScreen() {
               <View
                 style={[
                   styles.statusPill,
-                  { backgroundColor: opt.withinBudget ? '#ECFDF5' : '#FEF2F2' },
+                  {
+                    backgroundColor: opt.withinBudget
+                      ? 'rgba(16, 185, 129, 0.15)'
+                      : 'rgba(239, 68, 68, 0.15)',
+                  },
                 ]}
               >
                 <Ionicons
                   name={opt.withinBudget ? 'checkmark-circle' : 'close-circle'}
                   size={14}
-                  color={opt.withinBudget ? '#10B981' : '#DC2626'}
+                  color={opt.withinBudget ? '#74C69D' : '#F87171'}
                 />
                 <Text
                   style={[
                     styles.statusPillText,
-                    { color: opt.withinBudget ? '#065F46' : '#991B1B' },
+                    { color: opt.withinBudget ? '#74C69D' : '#F87171' },
                   ]}
                 >
-                  {opt.withinBudget ? 'WITHIN BUDGET' : 'EXCEEDS BUDGET'}
+                  {opt.withinBudget ? 'WITHIN BUDGET' : 'EXCEEDS'}
                 </Text>
               </View>
             </View>
@@ -235,8 +242,8 @@ export default function EstimatorScreen() {
               onPress={() => router.push(`/species/${opt.speciesId}`)}
               activeOpacity={0.8}
             >
-              <Text style={styles.profileLinkText}>View Full Species Profile & Products</Text>
-              <Ionicons name="chevron-forward" size={14} color="#2D6A4F" />
+              <Text style={styles.profileLinkText}>View Full Profile & Products</Text>
+              <Ionicons name="chevron-forward" size={14} color="#74C69D" />
             </TouchableOpacity>
           </View>
         ))
@@ -248,7 +255,7 @@ export default function EstimatorScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F8F5',
+    backgroundColor: '#0B1D15',
   },
   content: {
     paddingHorizontal: 20,
@@ -256,51 +263,57 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#52796F',
+    color: '#95A99E',
     marginBottom: 18,
   },
-  formCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 16,
+  glassCard: {
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    borderRadius: 20,
+    padding: 18,
     marginBottom: 20,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   inputLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
-    color: '#1B4332',
+    color: '#95A99E',
     marginBottom: 8,
     textTransform: 'uppercase',
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
   taskScroll: {
-    marginBottom: 12,
+    marginBottom: 14,
   },
   taskChip: {
-    backgroundColor: '#F4F8F5',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#D1EEE3',
+    backgroundColor: 'rgba(11, 29, 21, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
+    gap: 6,
   },
   taskChipActive: {
     backgroundColor: '#2D6A4F',
-    borderColor: '#2D6A4F',
+    borderColor: '#74C69D',
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#74C69D',
   },
   taskChipText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -311,16 +324,16 @@ const styles = StyleSheet.create({
   reqBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#EEF9F4',
-    padding: 10,
-    borderRadius: 10,
+    gap: 8,
+    backgroundColor: 'rgba(116, 198, 157, 0.12)',
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#B7E4CC',
+    borderColor: 'rgba(116, 198, 157, 0.25)',
   },
   reqText: {
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 12,
     flex: 1,
   },
@@ -335,22 +348,22 @@ const styles = StyleSheet.create({
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F4F8F5',
-    borderRadius: 12,
+    backgroundColor: 'rgba(11, 29, 21, 0.7)',
+    borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderWidth: 1.5,
-    borderColor: '#D1EEE3',
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.25)',
     gap: 6,
   },
   textInput: {
     flex: 1,
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
   },
   currencySymbol: {
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 16,
     fontWeight: '800',
   },
@@ -360,23 +373,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   calcBtn: {
-    backgroundColor: '#1B4332',
+    backgroundColor: '#74C69D',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
     borderRadius: 14,
     gap: 8,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
   },
   calcBtnText: {
-    color: '#FFFFFF',
+    color: '#0B1D15',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   resultHeaderRow: {
     flexDirection: 'row',
@@ -387,11 +395,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
   },
   resultCount: {
     fontSize: 12,
-    color: '#52796F',
+    color: '#95A99E',
   },
   loadingWrap: {
     alignItems: 'center',
@@ -399,25 +407,20 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
   },
   optionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1.5,
-    borderColor: '#E8F2ED',
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   bestMatchCard: {
-    borderColor: '#10B981',
-    backgroundColor: '#FAFDFB',
+    borderColor: '#74C69D',
+    backgroundColor: 'rgba(20, 46, 34, 0.9)',
   },
   optionHeader: {
     flexDirection: 'row',
@@ -429,14 +432,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: '#EEF9F4',
+    backgroundColor: 'rgba(116, 198, 157, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#B7E4CC',
+    borderColor: 'rgba(116, 198, 157, 0.3)',
   },
   rankText: {
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -444,12 +447,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   commonName: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
   },
   botanicalName: {
-    color: '#52796F',
+    color: '#74C69D',
     fontSize: 12,
     fontStyle: 'italic',
   },
@@ -457,7 +460,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F4F8F5',
+    backgroundColor: 'rgba(11, 29, 21, 0.6)',
     padding: 10,
     borderRadius: 12,
     marginBottom: 10,
@@ -472,7 +475,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   metricVal: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '800',
     marginTop: 2,
@@ -490,7 +493,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   reasonText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 12,
     lineHeight: 17,
     marginBottom: 10,
@@ -499,12 +502,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 8,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F0F5F2',
+    borderTopColor: 'rgba(116, 198, 157, 0.12)',
   },
   profileLinkText: {
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 12,
     fontWeight: '700',
   },

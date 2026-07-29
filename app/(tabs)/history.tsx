@@ -1,5 +1,5 @@
 // LumbrScan Dedicated Scan History Logs Screen
-// Light Nature Theme
+// Deep Emerald Glassmorphism Theme
 
 import React, { useState } from 'react';
 import {
@@ -63,14 +63,14 @@ export default function HistoryScreen() {
             onPress={handleClearAll}
             activeOpacity={0.7}
           >
-            <Ionicons name="trash-outline" size={18} color="#DC2626" />
+            <Ionicons name="trash-outline" size={18} color="#F87171" />
           </TouchableOpacity>
         )}
       </View>
 
       {/* ── Search Bar ── */}
       <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={18} color="#40916C" />
+        <Ionicons name="search-outline" size={18} color="#74C69D" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search history by species or defect..."
@@ -110,14 +110,14 @@ export default function HistoryScreen() {
 
             <View style={styles.metaRow}>
               <View style={styles.metaBadge}>
-                <Ionicons name="sparkles" size={12} color="#10B981" />
+                <Ionicons name="sparkles" size={12} color="#74C69D" />
                 <Text style={styles.metaBadgeText}>
                   {Math.round(log.confidenceScore * 100)}% Match
                 </Text>
               </View>
 
               <View style={styles.metaBadge}>
-                <Ionicons name="calendar-outline" size={12} color="#52796F" />
+                <Ionicons name="calendar-outline" size={12} color="#95A99E" />
                 <Text style={styles.metaText}>{dateStr}</Text>
               </View>
 
@@ -126,7 +126,9 @@ export default function HistoryScreen() {
                   styles.safetyPill,
                   {
                     backgroundColor:
-                      log.safetyRating === 'SAFE' ? '#ECFDF5' : '#FEF2F2',
+                      log.safetyRating === 'SAFE'
+                        ? 'rgba(16, 185, 129, 0.15)'
+                        : 'rgba(239, 68, 68, 0.15)',
                   },
                 ]}
               >
@@ -135,7 +137,7 @@ export default function HistoryScreen() {
                     styles.safetyPillText,
                     {
                       color:
-                        log.safetyRating === 'SAFE' ? '#065F46' : '#991B1B',
+                        log.safetyRating === 'SAFE' ? '#74C69D' : '#F87171',
                     },
                   ]}
                 >
@@ -165,7 +167,7 @@ export default function HistoryScreen() {
 
       {filteredLogs.length === 0 && (
         <View style={styles.emptyState}>
-          <Ionicons name="time-outline" size={48} color="#B7E4CC" />
+          <Ionicons name="time-outline" size={48} color="#74C69D" />
           <Text style={styles.emptyTitle}>No history logs found</Text>
           <Text style={styles.emptySub}>
             Past timber classification and condition scans will appear here.
@@ -179,7 +181,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F8F5',
+    backgroundColor: '#0B1D15',
   },
   content: {
     paddingHorizontal: 20,
@@ -193,54 +195,48 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#52796F',
+    color: '#95A99E',
   },
   clearBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
   },
   searchBox: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: 16,
     gap: 10,
     marginBottom: 16,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   searchInput: {
     flex: 1,
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 14,
   },
   logCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   logHeader: {
     flexDirection: 'row',
@@ -253,13 +249,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   speciesName: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
   },
   botanicalName: {
     fontSize: 12,
-    color: '#52796F',
+    color: '#74C69D',
     fontStyle: 'italic',
     marginTop: 1,
   },
@@ -274,20 +270,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#F4F8F5',
+    backgroundColor: 'rgba(11, 29, 21, 0.6)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#E2EEE9',
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   metaBadgeText: {
-    color: '#065F46',
+    color: '#74C69D',
     fontSize: 11,
     fontWeight: '700',
   },
   metaText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 11,
   },
   safetyPill: {
@@ -300,7 +296,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   defectText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
@@ -311,10 +307,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F0F5F2',
+    borderTopColor: 'rgba(116, 198, 157, 0.12)',
   },
   remedyText: {
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -325,13 +321,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
     marginTop: 12,
     marginBottom: 4,
   },
   emptySub: {
     fontSize: 13,
-    color: '#52796F',
+    color: '#95A99E',
     textAlign: 'center',
   },
 });

@@ -1,4 +1,4 @@
-// LumbrScan Root Layout — Light Nature Theme
+// LumbrScan Root Layout — Deep Emerald Glassmorphism Theme
 
 import React from 'react';
 import { Stack } from 'expo-router';
@@ -8,21 +8,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#0F281E',
           },
-          headerTintColor: '#1B4332',
+          headerTintColor: '#FFFFFF',
           headerTitleStyle: {
-            fontWeight: '700',
+            fontWeight: '800',
             fontSize: 17,
-            color: '#1B4332',
+            color: '#FFFFFF',
           },
           headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: '#F4F8F5',
+            backgroundColor: '#0B1D15',
           },
         }}
       >

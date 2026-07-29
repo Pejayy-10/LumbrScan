@@ -1,5 +1,5 @@
 // LumbrScan Module 4: Two-Way Decision Support Recommendation Engine Screen
-// Light Nature Theme
+// Deep Emerald Glassmorphism Theme
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecommenderStore } from '../../stores/useRecommenderStore';
 import { CONSTRUCTION_APPLICATIONS, SPECIES_DICTIONARY } from '../../constants/domain';
@@ -65,7 +65,7 @@ export default function RecommendScreen() {
           <Ionicons
             name="construct-outline"
             size={16}
-            color={mode === 'TASK_TO_MATERIAL' ? '#FFFFFF' : '#52796F'}
+            color={mode === 'TASK_TO_MATERIAL' ? '#FFFFFF' : '#95A99E'}
           />
           <Text
             style={[styles.modeBtnText, mode === 'TASK_TO_MATERIAL' && styles.modeBtnTextActive]}
@@ -82,7 +82,7 @@ export default function RecommendScreen() {
           <Ionicons
             name="leaf-outline"
             size={16}
-            color={mode === 'MATERIAL_TO_TASK' ? '#FFFFFF' : '#52796F'}
+            color={mode === 'MATERIAL_TO_TASK' ? '#FFFFFF' : '#95A99E'}
           />
           <Text
             style={[styles.modeBtnText, mode === 'MATERIAL_TO_TASK' && styles.modeBtnTextActive]}
@@ -97,7 +97,7 @@ export default function RecommendScreen() {
         <View>
           {/* Info Banner */}
           <View style={styles.infoBanner}>
-            <Ionicons name="information-circle-outline" size={18} color="#2D6A4F" />
+            <Ionicons name="information-circle-outline" size={18} color="#74C69D" />
             <Text style={styles.infoBannerText}>
               Select a construction application to find the best-suited Philippine timber species.
             </Text>
@@ -141,8 +141,8 @@ export default function RecommendScreen() {
 
           {isSearching ? (
             <View style={styles.loadingWrap}>
-              <ActivityIndicator color="#2D6A4F" size="large" />
-              <Text style={styles.loadingText}>Querying mock decision engine…</Text>
+              <ActivityIndicator color="#74C69D" size="large" />
+              <Text style={styles.loadingText}>Querying decision engine…</Text>
             </View>
           ) : (
             taskResult?.recommendedSpeciesList.map((item) => (
@@ -166,7 +166,7 @@ export default function RecommendScreen() {
         <View>
           {/* Info Banner */}
           <View style={styles.infoBanner}>
-            <Ionicons name="information-circle-outline" size={18} color="#2D6A4F" />
+            <Ionicons name="information-circle-outline" size={18} color="#74C69D" />
             <Text style={styles.infoBannerText}>
               Select a timber species to see its permissible and prohibited construction applications.
             </Text>
@@ -189,6 +189,7 @@ export default function RecommendScreen() {
                 ]}
                 onPress={() => setActiveSpeciesKey(sp.id)}
               >
+                {activeSpeciesKey === sp.id && <View style={styles.activeDot} />}
                 <Text
                   style={[
                     styles.speciesChipText,
@@ -246,7 +247,7 @@ export default function RecommendScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F8F5',
+    backgroundColor: '#0B1D15',
   },
   content: {
     paddingHorizontal: 20,
@@ -254,27 +255,24 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1B4332',
+    color: '#FFFFFF',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#52796F',
+    color: '#95A99E',
     marginBottom: 18,
   },
   modeSwitcher: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
+    borderRadius: 16,
     padding: 4,
     marginBottom: 18,
     gap: 4,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   modeBtn: {
     flex: 1,
@@ -282,14 +280,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 11,
-    borderRadius: 10,
+    borderRadius: 12,
     gap: 6,
   },
   modeBtnActive: {
     backgroundColor: '#2D6A4F',
   },
   modeBtnText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -301,23 +299,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
-    backgroundColor: '#EEF9F4',
+    backgroundColor: 'rgba(116, 198, 157, 0.12)',
     padding: 12,
     borderRadius: 12,
     marginBottom: 18,
     borderWidth: 1,
-    borderColor: '#B7E4CC',
+    borderColor: 'rgba(116, 198, 157, 0.25)',
   },
   infoBannerText: {
     flex: 1,
-    color: '#2D6A4F',
+    color: '#74C69D',
     fontSize: 13,
     lineHeight: 18,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#1B4332',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 12,
   },
   appGrid: {
@@ -325,20 +323,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   appCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
     padding: 14,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: '#E8F2ED',
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 1,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   appCardActive: {
-    borderColor: '#2D6A4F',
-    backgroundColor: '#EEF9F4',
+    borderColor: '#74C69D',
+    backgroundColor: 'rgba(20, 46, 34, 0.9)',
   },
   appCardHeader: {
     flexDirection: 'row',
@@ -351,25 +344,24 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#D1EEE3',
+    borderColor: '#95A99E',
     backgroundColor: 'transparent',
   },
   appCardDotActive: {
-    backgroundColor: '#2D6A4F',
-    borderColor: '#2D6A4F',
+    backgroundColor: '#74C69D',
+    borderColor: '#74C69D',
   },
   appCardTitle: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     flex: 1,
   },
   appCardTitleActive: {
-    color: '#2D6A4F',
-    fontWeight: '700',
+    color: '#74C69D',
   },
   appCardSub: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 12,
     marginLeft: 20,
   },
@@ -379,34 +371,31 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
   },
   recommendCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
     flexDirection: 'row',
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 14,
     marginBottom: 10,
     gap: 12,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   rankBadge: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: '#FEF6E4',
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#FDE68A',
+    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   rankNum: {
-    color: '#D97706',
+    color: '#F59E0B',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -420,12 +409,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   speciesName: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   advantagesText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 12,
     lineHeight: 17,
   },
@@ -433,19 +422,28 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   speciesChip: {
-    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(11, 29, 21, 0.6)',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#D1EEE3',
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
+    gap: 6,
   },
   speciesChipActive: {
     backgroundColor: '#2D6A4F',
-    borderColor: '#2D6A4F',
+    borderColor: '#74C69D',
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#74C69D',
   },
   speciesChipText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -454,15 +452,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   materialCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 18,
     marginBottom: 18,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   materialCardHeader: {
     flexDirection: 'row',
@@ -471,18 +466,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   matTitle: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '800',
   },
   matBotanical: {
-    color: '#52796F',
+    color: '#74C69D',
     fontSize: 13,
     fontStyle: 'italic',
     marginTop: 2,
   },
   matGrain: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
     lineHeight: 18,
   },

@@ -1,4 +1,4 @@
-// LumbrScan Construction Application Suitability Card — Light Theme
+// LumbrScan Construction Application Suitability Card — Glassmorphism Theme
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -16,44 +16,44 @@ export const SafetyCard: React.FC<SafetyCardProps> = ({ title, safetyRating, rat
     switch (rating) {
       case 'SAFE':
         return {
-          bg: '#ECFDF5',
-          border: '#6EE7B7',
+          bg: 'rgba(16, 185, 129, 0.12)',
+          border: 'rgba(16, 185, 129, 0.3)',
           leftBar: '#10B981',
-          text: '#065F46',
+          text: '#74C69D',
           label: 'SAFE APPLICATION',
           icon: 'shield-checkmark' as const,
-          iconColor: '#10B981',
+          iconColor: '#74C69D',
         };
       case 'PERMISSIBLE_WITH_CAUTION':
         return {
-          bg: '#FFFBEB',
-          border: '#FCD34D',
-          leftBar: '#D97706',
-          text: '#92400E',
+          bg: 'rgba(245, 158, 11, 0.12)',
+          border: 'rgba(245, 158, 11, 0.3)',
+          leftBar: '#F59E0B',
+          text: '#FBBF24',
           label: 'PERMISSIBLE WITH CAUTION',
           icon: 'warning' as const,
-          iconColor: '#D97706',
+          iconColor: '#FBBF24',
         };
       case 'HIGH_RISK_NOT_RECOMMENDED':
         return {
-          bg: '#FFF7ED',
-          border: '#FDBA74',
-          leftBar: '#EA580C',
-          text: '#9A3412',
+          bg: 'rgba(249, 115, 22, 0.12)',
+          border: 'rgba(249, 115, 22, 0.3)',
+          leftBar: '#F97316',
+          text: '#FDBA74',
           label: 'HIGH RISK — NOT RECOMMENDED',
           icon: 'alert-circle' as const,
-          iconColor: '#EA580C',
+          iconColor: '#FDBA74',
         };
       case 'PROHIBITED_UNSAFE':
       default:
         return {
-          bg: '#FEF2F2',
-          border: '#FCA5A5',
-          leftBar: '#DC2626',
-          text: '#991B1B',
+          bg: 'rgba(239, 68, 68, 0.12)',
+          border: 'rgba(239, 68, 68, 0.3)',
+          leftBar: '#EF4444',
+          text: '#F87171',
           label: 'PROHIBITED — UNSAFE',
           icon: 'close-circle' as const,
-          iconColor: '#DC2626',
+          iconColor: '#F87171',
         };
     }
   };
@@ -78,15 +78,10 @@ export const SafetyCard: React.FC<SafetyCardProps> = ({ title, safetyRating, rat
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    borderRadius: 14,
-    borderWidth: 1.5,
+    borderRadius: 16,
+    borderWidth: 1,
     marginBottom: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
   },
   leftBar: {
     width: 4,
@@ -107,13 +102,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   cardTitle: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     marginBottom: 6,
   },
   rationaleText: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 13,
     lineHeight: 18,
   },

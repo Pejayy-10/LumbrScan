@@ -1,10 +1,11 @@
 // LumbrScan AI Species Match Confidence Gauge Component
+// Deep Emerald Glassmorphism Theme
 
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 
 interface ConfidenceGaugeProps {
-  confidenceScore: number; // e.g. 0.942 for 94.2%
+  confidenceScore: number;
   speciesName: string;
 }
 
@@ -24,9 +25,9 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
   }, [confidenceScore]);
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.85) return '#10B981'; // Emerald High Confidence
-    if (score >= 0.65) return '#D97706'; // Amber Moderate
-    return '#DC2626'; // Red Low
+    if (score >= 0.85) return '#74C69D';
+    if (score >= 0.65) return '#F59E0B';
+    return '#F87171';
   };
 
   const scoreColor = getScoreColor(confidenceScore);
@@ -62,15 +63,12 @@ export const ConfidenceGauge: React.FC<ConfidenceGaugeProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(20, 46, 34, 0.75)',
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 18,
     marginBottom: 16,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.2)',
   },
   headerRow: {
     flexDirection: 'row',
@@ -79,9 +77,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   percentageText: {
     fontSize: 22,
@@ -89,21 +87,23 @@ const styles = StyleSheet.create({
   },
   track: {
     height: 10,
-    backgroundColor: '#E8F2ED',
+    backgroundColor: 'rgba(11, 29, 21, 0.7)',
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.15)',
   },
   fill: {
     height: '100%',
     borderRadius: 5,
   },
   footerNote: {
-    color: '#52796F',
+    color: '#95A99E',
     fontSize: 12,
   },
   boldText: {
-    color: '#1B4332',
+    color: '#FFFFFF',
     fontWeight: '700',
   },
 });

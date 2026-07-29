@@ -1,5 +1,5 @@
 // LumbrScan — Custom Floating Tab Bar
-// Design: Dark forest green pill nav with 4 tabs + separate green camera FAB
+// Design: Dark forest green pill nav with 4 tabs + separate circular green camera FAB
 
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
@@ -61,10 +61,10 @@ export function CustomTabBar() {
               onPress={() => router.push(tab.path as never)}
               activeOpacity={0.75}
             >
-              <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
+              <View style={[styles.iconWrapCircle, active && styles.iconWrapActiveCircle]}>
                 <Ionicons
                   name={active ? tab.activeIcon : tab.icon}
-                  size={20}
+                  size={21}
                   color={active ? '#FFFFFF' : '#74C69D'}
                 />
               </View>
@@ -73,11 +73,11 @@ export function CustomTabBar() {
         })}
       </View>
 
-      {/* Camera / Scan FAB — separated from the pill */}
+      {/* Camera / Scan FAB — Perfect Circle */}
       <TouchableOpacity
         style={[
-          styles.fab,
-          pathname.startsWith('/scan') && styles.fabActive,
+          styles.fabCircle,
+          pathname.startsWith('/scan') && styles.fabActiveCircle,
         ]}
         onPress={() => router.push('/scan' as never)}
         activeOpacity={0.85}
@@ -95,57 +95,65 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     paddingHorizontal: 16,
-    gap: 10,
+    gap: 12,
     pointerEvents: 'box-none',
   },
   pill: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#1B4332',
+    backgroundColor: '#0F281E',
     borderRadius: 40,
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'space-around',
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.25)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    elevation: 14,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
   },
-  iconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+  iconWrapCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22, // Perfect circle!
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconWrapActive: {
+  iconWrapActiveCircle: {
     backgroundColor: '#2D6A4F',
+    shadowColor: '#74C69D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  fab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  fabCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29, // Perfect circle FAB!
     backgroundColor: '#2D6A4F',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(116, 198, 157, 0.3)',
     shadowColor: '#2D6A4F',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 12,
-    marginBottom: 2,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 14,
   },
-  fabActive: {
+  fabActiveCircle: {
     backgroundColor: '#1B4332',
+    borderColor: '#74C69D',
   },
 });
