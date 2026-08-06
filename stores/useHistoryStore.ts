@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HistoryLogRecord, PredictionResponse } from '../types';
 
 export interface HistoryStoreState {
@@ -74,21 +75,7 @@ export const useHistoryStore = create<HistoryStoreState>()(
     }),
     {
       name: '@lumbrscan_history_v1',
-      storage: createJSONStorage(() => {
-        // Safe storage provider for Expo environment
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            return window.localStorage;
-          }
-        } catch (e) {}
-        // Fallback in-memory map
-        const memoryStorage = new Map<string, string>();
-        return {
-          getItem: (name: string) => memoryStorage.get(name) || null,
-          setItem: (name: string, value: string) => memoryStorage.set(name, value),
-          removeItem: (name: string) => memoryStorage.delete(name),
-        };
-      }),
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );

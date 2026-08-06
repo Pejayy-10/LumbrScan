@@ -11,8 +11,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.pejayy10.lumbrscan",
       "adaptiveIcon": {
-        "backgroundColor": "#0F281E",
+        "backgroundColor": "#F4F6F8",
         "foregroundImage": "./assets/icon.png"
       },
       "predictiveBackGestureEnabled": false
@@ -20,8 +21,19 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "splash": {
+      "backgroundColor": "#F4F6F8",
+      "resizeMode": "contain"
+    },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "LumbrScan needs access to your photo library to select timber images for species identification.",
+          "cameraPermission": "LumbrScan needs access to your camera to capture timber images for species identification."
+        }
+      ]
     ]
   }
 }
