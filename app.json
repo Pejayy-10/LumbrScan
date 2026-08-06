@@ -16,7 +16,10 @@
         "backgroundColor": "#F4F6F8",
         "foregroundImage": "./assets/icon.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +37,13 @@
           "cameraPermission": "LumbrScan needs access to your camera to capture timber images for species identification."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0496feb6-7191-4651-878f-3e18db367d12"
+      }
+    },
+    "owner": "frandesa"
   }
 }
