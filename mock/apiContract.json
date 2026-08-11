@@ -73,7 +73,13 @@
               "label": "End Splitting / Cracks",
               "severity": "MINOR",
               "confidenceScore": 0.94,
-              "penaltyPoints": 1
+              "penaltyPoints": 1,
+              "boundingBox": {
+                "x": 0.08,
+                "y": 0.62,
+                "width": 0.34,
+                "height": 0.12
+              }
             }
           ],
           "remediationRecommendations": [

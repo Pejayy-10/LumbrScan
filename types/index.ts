@@ -33,6 +33,13 @@ export type SafetyRating =
   | 'HIGH_RISK_NOT_RECOMMENDED'
   | 'PROHIBITED_UNSAFE';
 
+export interface NormalizedBoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 // -----------------------------------------------------------------------------
 // 1. AUTOMATED AI DEFECT DETECTION & REMEDIATION
 // -----------------------------------------------------------------------------
@@ -42,6 +49,7 @@ export interface AutomatedDefectItem {
   severity: SeverityLevel;
   confidenceScore: number;
   penaltyPoints: number;
+  boundingBox?: NormalizedBoundingBox;
 }
 
 export interface AutomatedDefectDetection {

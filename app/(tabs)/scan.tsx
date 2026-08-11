@@ -18,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useScanStore } from '../../stores/useScanStore';
 import { useHistoryStore } from '../../stores/useHistoryStore';
+import { DamageOverlay } from '../../components/modules/DamageOverlay';
 import { ModalityType } from '../../types';
 
 export default function ScanScreen() {
@@ -111,6 +112,9 @@ export default function ScanScreen() {
   const displayUri = croppedUri || imageUri;
   const automatedDefects = activeResult?.automatedDefectDetection;
   const severeFallback = activeResult?.structuralAssessment?.severeDefectFallback;
+  const hasOverlayDamage = Boolean(
+    automatedDefects?.detectedDefects?.some((defect) => defect.boundingBox)
+  );
 
   return (
     <ScrollView
@@ -226,6 +230,25 @@ export default function ScanScreen() {
               <Text style={styles.badgeText}>AI VISION OUTPUT</Text>
             </View>
             <Text style={styles.cardTitle}>Automated Defect Findings</Text>
+          </View>
+
+          <View style={styles.resultPreviewSection}>
+            <Text style={styles.sectionHeader}>Damage Localization Preview</Text>
+            {displayUri ? (
+              <View style={styles.resultImageFrame}>
+                <Image source={{ uri: displayUri }} style={styles.resultImage} resizeMode="cover" />
+                {hasOverlayDamage && automatedDefects ? (
+                  <DamageOverlay imageUri={displayUri} detection={automatedDefects} />
+                ) : null}
+              </View>
+            ) : (
+              <View style={styles.resultImageEmpty}>
+                <Ionicons name="image-outline" size={22} color="#9CA3AF" />
+                <Text style={styles.resultImageEmptyText}>
+                  Capture an image to see damage markers.
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Primary Match Banner */}
@@ -531,6 +554,39 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 10,
     elevation: 2,
+  },
+  resultPreviewSection: {
+    marginBottom: 14,
+  },
+  resultImageFrame: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#F3F4F6',
+    marginTop: 8,
+  },
+  resultImage: {
+    width: '100%',
+    height: '100%',
+  },
+  resultImageEmpty: {
+    marginTop: 8,
+    minHeight: 220,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#D1D5DB',
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  resultImageEmptyText: {
+    color: '#6B7280',
+    fontSize: 12,
+    textAlign: 'center',
+    paddingHorizontal: 18,
   },
   speciesBanner: {
     flexDirection: 'row',

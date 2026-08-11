@@ -28,62 +28,124 @@ export const mockApiClient: LumbrScanApiClient = {
   predictSpecies: async (payload: PredictionPayload): Promise<PredictionResponse> => {
     await delay(750);
 
-    const targetSpeciesKey = 'apitong';
-    const species = SPECIES_DICTIONARY[targetSpeciesKey];
+    type SampleScanConfig = {
+      speciesKey: keyof typeof SPECIES_DICTIONARY;
+      primaryConfidence: number;
+      processingTimeMs: number;
+      conditionAssessment: {
+        hasDecayOrRot: boolean;
+        hasEndSplitting: boolean;
+        hasWarping: boolean;
+        hasUnsoundKnots: boolean;
+        hasInsectBoreholes: boolean;
+        defectSeverity: SeverityLevel;
+      };
+      detectedDefects: AutomatedDefectItem[];
+      remediation: string[];
+    };
+
+    const sampleConfigs: Record<string, SampleScanConfig> = {
+      TRANSVERSAL_CROSS_SECTION: {
+        speciesKey: 'apitong',
+        primaryConfidence: 0.942,
+        processingTimeMs: 680,
+        conditionAssessment: {
+          hasDecayOrRot: false,
+          hasEndSplitting: true,
+          hasWarping: false,
+          hasUnsoundKnots: false,
+          hasInsectBoreholes: false,
+          defectSeverity: 'LOW',
+        },
+        detectedDefects: [
+          {
+            defectType: 'END_SPLITTING',
+            label: 'End Splitting / Cracks',
+            severity: 'LOW',
+            confidenceScore: 0.94,
+            penaltyPoints: 1,
+            boundingBox: { x: 0.08, y: 0.62, width: 0.34, height: 0.12 },
+          },
+        ],
+        remediation: [...DEFECT_REMEDIATION_GUIDE.END_SPLITTING],
+      },
+      WOOD_GRAIN: {
+        speciesKey: 'apitong',
+        primaryConfidence: 0.912,
+        processingTimeMs: 710,
+        conditionAssessment: {
+          hasDecayOrRot: false,
+          hasEndSplitting: true,
+          hasWarping: false,
+          hasUnsoundKnots: true,
+          hasInsectBoreholes: false,
+          defectSeverity: 'MODERATE',
+        },
+        detectedDefects: [
+          {
+            defectType: 'END_SPLITTING',
+            label: 'End Splitting / Cracks',
+            severity: 'LOW',
+            confidenceScore: 0.91,
+            penaltyPoints: 1,
+            boundingBox: { x: 0.16, y: 0.7, width: 0.28, height: 0.1 },
+          },
+          {
+            defectType: 'UNSOUND_KNOTS',
+            label: 'Unsound Loose Knots',
+            severity: 'MODERATE',
+            confidenceScore: 0.84,
+            penaltyPoints: 1,
+            boundingBox: { x: 0.56, y: 0.34, width: 0.18, height: 0.14 },
+          },
+        ],
+        remediation: [...DEFECT_REMEDIATION_GUIDE.END_SPLITTING, ...DEFECT_REMEDIATION_GUIDE.UNSOUND_KNOTS],
+      },
+      LOG_BARK: {
+        speciesKey: 'gmelina',
+        primaryConfidence: 0.887,
+        processingTimeMs: 735,
+        conditionAssessment: {
+          hasDecayOrRot: true,
+          hasEndSplitting: false,
+          hasWarping: false,
+          hasUnsoundKnots: false,
+          hasInsectBoreholes: true,
+          defectSeverity: 'MODERATE',
+        },
+        detectedDefects: [
+          {
+            defectType: 'DECAY_ROT',
+            label: 'Decay / Fungal Rot',
+            severity: 'MODERATE',
+            confidenceScore: 0.89,
+            penaltyPoints: 2,
+            boundingBox: { x: 0.1, y: 0.2, width: 0.24, height: 0.18 },
+          },
+          {
+            defectType: 'INSECT_BOREHOLES',
+            label: 'Insect Boreholes (Termites / Beetles)',
+            severity: 'MODERATE',
+            confidenceScore: 0.87,
+            penaltyPoints: 1,
+            boundingBox: { x: 0.58, y: 0.52, width: 0.22, height: 0.16 },
+          },
+        ],
+        remediation: [...DEFECT_REMEDIATION_GUIDE.DECAY_ROT, ...DEFECT_REMEDIATION_GUIDE.INSECT_BOREHOLES],
+      },
+    };
+
+    const sample = sampleConfigs[payload.modalityType] || sampleConfigs.TRANSVERSAL_CROSS_SECTION;
+    const species = SPECIES_DICTIONARY[sample.speciesKey];
     const fprdi = FPRDI_RATINGS[species.fprdiGroup];
     const denr = DENR_BADGES[species.denrStatus];
 
-    // Compute or parse condition evaluation
-    const conditionAssessment = payload.conditionAssessment || {
-      hasDecayOrRot: false,
-      hasEndSplitting: true,
-      hasWarping: false,
-      hasUnsoundKnots: false,
-      hasInsectBoreholes: false,
-      defectSeverity: 'LOW' as SeverityLevel,
-    };
+    const conditionAssessment = payload.conditionAssessment || sample.conditionAssessment;
+    const detectedDefects = sample.detectedDefects;
+    const remediationRecommendations = Array.from(new Set(sample.remediation));
 
-    let downgradeCount = 0;
-    const detectedDefects: AutomatedDefectItem[] = [];
-    const remediationRecommendations: string[] = [];
+    const downgradeCount = detectedDefects.reduce((total, defect) => total + defect.penaltyPoints, 0);
 
-    if (conditionAssessment.hasDecayOrRot) {
-      downgradeCount += 2;
-      detectedDefects.push({
-        defectType: 'DECAY_ROT',
-        label: 'Decay / Fungal Rot',
-        severity: conditionAssessment.defectSeverity || 'MODERATE',
-        confidenceScore: 0.89,
-        penaltyPoints: 2,
-      });
-      remediationRecommendations.push(...DEFECT_REMEDIATION_GUIDE.DECAY_ROT);
-    }
-
-    if (conditionAssessment.hasEndSplitting) {
-      downgradeCount += 1;
-      detectedDefects.push({
-        defectType: 'END_SPLITTING',
-        label: 'End Splitting / Cracks',
-        severity: conditionAssessment.defectSeverity || 'LOW',
-        confidenceScore: 0.94,
-        penaltyPoints: 1,
-      });
-      remediationRecommendations.push(...DEFECT_REMEDIATION_GUIDE.END_SPLITTING);
-    }
-
-    if (conditionAssessment.hasUnsoundKnots) {
-      downgradeCount += 1;
-      detectedDefects.push({
-        defectType: 'UNSOUND_KNOTS',
-        label: 'Unsound Loose Knots',
-        severity: conditionAssessment.defectSeverity || 'LOW',
-        confidenceScore: 0.82,
-        penaltyPoints: 1,
-      });
-      remediationRecommendations.push(...DEFECT_REMEDIATION_GUIDE.UNSOUND_KNOTS);
-    }
-
-    // Determine effective FPRDI Group
     const groupOrder: FprdiGroupCode[] = ['GROUP_I', 'GROUP_II', 'GROUP_III', 'GROUP_IV'];
     const originalIndex = groupOrder.indexOf(species.fprdiGroup);
     const effectiveIndex = Math.min(originalIndex + downgradeCount, groupOrder.length - 1);
@@ -124,7 +186,7 @@ export const mockApiClient: LumbrScanApiClient = {
     return {
       status: 'SUCCESS',
       timestamp: new Date().toISOString(),
-      processingTimeMs: 680,
+      processingTimeMs: sample.processingTimeMs,
       prediction: {
         primaryMatch: {
           id: species.id,
@@ -132,9 +194,9 @@ export const mockApiClient: LumbrScanApiClient = {
           botanicalName: species.botanicalName,
           localName: species.localName,
           category: species.category,
-          confidenceScore: 0.942,
+          confidenceScore: sample.primaryConfidence,
           grainCharacteristics: species.grainCharacteristics,
-          visualTexture: 'COARSE_INTERLOCKED',
+          visualTexture: sample.speciesKey === 'gmelina' ? 'FIBROUS_BARK' : 'COARSE_INTERLOCKED',
         },
         alternativeMatches: [
           {
@@ -160,7 +222,7 @@ export const mockApiClient: LumbrScanApiClient = {
         hasDefects: detectedDefects.length > 0,
         overallSeverity: conditionAssessment.defectSeverity || (detectedDefects.length > 0 ? 'LOW' : 'NONE'),
         detectedDefects,
-        remediationRecommendations: Array.from(new Set(remediationRecommendations)),
+        remediationRecommendations,
       },
       structuralAssessment: {
         nominalFprdiGroup: species.fprdiGroup,
