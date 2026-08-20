@@ -1,0 +1,21 @@
+# Python Virtual Environment (DO NOT commit — too large)
+.venv/
+
+# Trained model weights (too large for Git — use Git LFS or share separately)
+backend/app/ml/weights/*.pt
+backend/app/ml/weights/*.onnx
+
+# Dataset images (can be very large)
+backend/data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
