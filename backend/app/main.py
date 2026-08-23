@@ -61,11 +61,13 @@ app.add_middleware(
 from app.api.v1.endpoints.health import router as health_router
 from app.api.v1.endpoints.species import router as species_router
 from app.api.v1.endpoints.scan import router as scan_router
+from app.api.v1.endpoints.interim_species_scan import router as interim_species_scan_router
 from app.api.v1.endpoints.recommend import router as recommend_router
 
 app.include_router(health_router,   prefix="/api/v1", tags=["Health"])
 app.include_router(species_router,  prefix="/api/v1", tags=["Species"])
 app.include_router(scan_router,     prefix="/api/v1", tags=["Scan"])
+app.include_router(interim_species_scan_router, prefix="/api/v1", tags=["Interim Research"])
 app.include_router(recommend_router, prefix="/api/v1", tags=["Recommend"])
 
 

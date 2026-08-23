@@ -35,9 +35,10 @@ This is required because EfficientNet was originally trained on ImageNet with
 this exact normalization. Using the same normalization ensures transfer learning works.
 """
 
+import csv
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 import torch
 from torch.utils.data import Dataset
@@ -178,4 +179,91 @@ class TimberPairedDataset(Dataset):
             "cross_section": cross_tensor,          # [3, 224, 224] float tensor
             "wood_grain":    grain_tensor,           # [3, 224, 224] float tensor
             "species_label": torch.tensor(sample["species_label"], dtype=torch.long),
+        }
+
+
+def build_manifest_pairs(
+    manifest_path: str | Path,
+    species_classes: Sequence[str],
+    held_out_fold: int | None = None,
+    split: str = "train",
+) -> list[dict[str, str | int]]:
+    """Build paired samples from reviewed metadata without specimen leakage.
+
+    The manifest contains one row per camera photo. Photos are paired only within
+    the same species and physical timber specimen. A held-out fold therefore
+    excludes every photo of that specimen from the training samples.
+    """
+    manifest = Path(manifest_path).resolve()
+    backend_root = manifest.parents[2]
+    species_to_idx = {species: index for index, species in enumerate(species_classes)}
+    grouped: dict[tuple[str, str], dict[str, list[dict[str, str]]]] = {}
+
+    with manifest.open("r", encoding="utf-8", newline="") as file:
+        for row in csv.DictReader(file):
+            if row.get("quality_status") != "KEEP":
+                continue
+            species = row.get("species", "")
+            if species not in species_to_idx:
+                continue
+            fold_value = row.get("fold_id", "")
+            if held_out_fold is not None:
+                if not fold_value:
+                    raise ValueError("Manifest has no fold assignments. Run create_grouped_folds.py first.")
+                is_held_out = int(fold_value) == held_out_fold
+                if split == "train" and is_held_out:
+                    continue
+                if split == "validation" and not is_held_out:
+                    continue
+            processed_path = backend_root / row["processed_path"]
+            if not processed_path.is_file():
+                raise FileNotFoundError(
+                    f"Missing processed image {processed_path}. Review and crop the manifest row first."
+                )
+            key = (species, row["specimen_id"])
+            grouped.setdefault(key, {"cross_section": [], "wood_grain": []})
+            modality = row.get("modality", "")
+            if modality in grouped[key]:
+                grouped[key][modality].append(row)
+
+    samples: list[dict[str, str | int]] = []
+    for (species, specimen_id), modalities in sorted(grouped.items()):
+        cross_sections = sorted(modalities["cross_section"], key=lambda item: item["image_id"])
+        wood_grains = sorted(modalities["wood_grain"], key=lambda item: item["image_id"])
+        pair_count = min(len(cross_sections), len(wood_grains))
+        if pair_count == 0:
+            continue
+        for index in range(pair_count):
+            samples.append({
+                "cross_section": str(backend_root / cross_sections[index]["processed_path"]),
+                "wood_grain": str(backend_root / wood_grains[index]["processed_path"]),
+                "species_label": species_to_idx[species],
+                "species": species,
+                "specimen_id": specimen_id,
+            })
+
+    if not samples:
+        raise ValueError(f"No {split} pairs were built from {manifest}.")
+    return samples
+
+
+class ManifestPairedDataset(Dataset):
+    """A reviewed, pre-split paired dataset built from ``image_metadata.csv``."""
+
+    def __init__(self, samples: Sequence[dict[str, str | int]], transform: Optional[transforms.Compose] = None):
+        self.samples = list(samples)
+        self.transform = transform or get_val_transforms()
+
+    def __len__(self) -> int:
+        return len(self.samples)
+
+    def __getitem__(self, idx: int) -> dict:
+        sample = self.samples[idx]
+        cross_img = Image.open(str(sample["cross_section"])).convert("RGB")
+        grain_img = Image.open(str(sample["wood_grain"])).convert("RGB")
+        return {
+            "cross_section": self.transform(cross_img),
+            "wood_grain": self.transform(grain_img),
+            "species_label": torch.tensor(int(sample["species_label"]), dtype=torch.long),
+            "specimen_id": str(sample["specimen_id"]),
         }

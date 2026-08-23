@@ -38,6 +38,9 @@ SYSTEM_CONTEXT.md
 # typescript
 *.tsbuildinfo
 
+# Generated research review workbooks and previews
+/outputs/
+
 # generated native folders
 /ios
 /android

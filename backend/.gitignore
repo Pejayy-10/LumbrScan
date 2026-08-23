@@ -2,11 +2,15 @@
 .venv/
 
 # Trained model weights (too large for Git — use Git LFS or share separately)
-backend/app/ml/weights/*.pt
-backend/app/ml/weights/*.onnx
+/app/ml/weights/*.pt
+/app/ml/weights/*.onnx
+/app/ml/weights/*.onnx.data
+/data/checkpoints/
+/data/metadata/tmp*
 
 # Dataset images (can be very large)
-backend/data/
+/data/raw/
+/data/processed/
 
 # Python cache
 __pycache__/

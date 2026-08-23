@@ -139,13 +139,13 @@ class ModalityAttentionGate(nn.Module):
 # ===========================================================================
 class SpeciesHead(nn.Module):
     """Head 1: Predicts which of the 11 Philippine timber species this is."""
-    def __init__(self):
+    def __init__(self, num_species: int = NUM_SPECIES):
         super().__init__()
         self.classifier = nn.Sequential(
             nn.Linear(FUSION_DIM, 512),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(512, NUM_SPECIES),
+            nn.Linear(512, num_species),
             # NOTE: No softmax here — PyTorch's CrossEntropyLoss expects raw logits
         )
 
@@ -209,7 +209,7 @@ class LumbrScanFusionModel(nn.Module):
         - severity_logits: [B, 4]  — raw scores for 4 severity levels
     """
 
-    def __init__(self, pretrained: bool = True):
+    def __init__(self, pretrained: bool = True, num_species: int = NUM_SPECIES):
         super().__init__()
 
         # Two separate backbones — one per modality
@@ -228,7 +228,7 @@ class LumbrScanFusionModel(nn.Module):
         )
 
         # Three task-specific prediction heads
-        self.species_head  = SpeciesHead()
+        self.species_head  = SpeciesHead(num_species=num_species)
         self.defect_head   = DefectHead()
         self.severity_head = SeverityHead()
 
