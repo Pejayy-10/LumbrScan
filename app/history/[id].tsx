@@ -1,294 +1,38 @@
-// LumbrScan History Inspection Log Detail Viewer
-// Light Nature Theme
-
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AppScreen } from '../../components/ui/AppScreen';
+import { radius, space, typeScale } from '../../constants/appTheme';
+import { SPECIES_DICTIONARY } from '../../constants/domain';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import { useHistoryStore } from '../../stores/useHistoryStore';
-import { FprdiBadge } from '../../components/ui/FprdiBadge';
 
 export default function HistoryDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const theme = useAppTheme();
   const router = useRouter();
-
-  const getLogById = useHistoryStore((state) => state.getLogById);
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const log = useHistoryStore((state) => state.logs.find((entry) => entry.id === id));
   const deleteLog = useHistoryStore((state) => state.deleteLog);
 
-  const log = getLogById(id || '');
+  if (!log) return <AppScreen contentContainerStyle={styles.missing}><View style={[styles.missingIcon, { backgroundColor: theme.colors.warningSoft }]}><Ionicons name="time-outline" size={28} color={theme.colors.warning} /></View><Text style={[styles.missingTitle, { color: theme.colors.text }]}>Scan not found</Text><Text style={[styles.missingText, { color: theme.colors.textMuted }]}>This local history record may have been cleared from this device.</Text><TouchableOpacity onPress={() => router.back()} style={[styles.back, { backgroundColor: theme.colors.primary }]}><Text style={[styles.backText, { color: theme.colors.textOnStrong }]}>Back to history</Text></TouchableOpacity></AppScreen>;
 
-  if (!log) {
-    return (
-      <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle-outline" size={48} color="#DC2626" />
-        <Text style={styles.errorTitle}>Log Record Not Found</Text>
-        <Text style={styles.errorSub}>The requested inspection history log was deleted or moved.</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Text style={styles.backBtnText}>Back to History</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  const species = SPECIES_DICTIONARY[log.speciesId];
+  const removeRecord = () => Alert.alert('Delete saved scan?', 'This only removes the local history record.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { deleteLog(log.id); router.back(); } }]);
 
-  const handleDelete = () => {
-    Alert.alert(
-      'Delete Log Record',
-      'Delete this saved inspection record permanently?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteLog(log.id);
-            router.back();
-          },
-        },
-      ]
-    );
-  };
-
-  const dateStr = new Date(log.timestamp).toLocaleString();
-
-  return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* ── Header Card ── */}
-      <View style={styles.card}>
-        <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.speciesName}>{log.commonName}</Text>
-            <Text style={styles.botanicalName}>{log.botanicalName}</Text>
-          </View>
-          <FprdiBadge groupCode={log.effectiveFprdiGroup} size="lg" />
-        </View>
-
-        <View style={styles.metaRow}>
-          <View style={styles.metaBadge}>
-            <Ionicons name="sparkles" size={14} color="#10B981" />
-            <Text style={styles.metaBadgeText}>
-              {Math.round(log.confidenceScore * 100)}% Confidence Match
-            </Text>
-          </View>
-
-          <View style={styles.metaBadge}>
-            <Ionicons name="time-outline" size={14} color="#52796F" />
-            <Text style={styles.metaText}>{dateStr}</Text>
-          </View>
-        </View>
-
-        <View style={styles.safetyBox}>
-          <Ionicons
-            name={log.safetyRating === 'SAFE' ? 'shield-checkmark' : 'alert-circle'}
-            size={18}
-            color={log.safetyRating === 'SAFE' ? '#10B981' : '#DC2626'}
-          />
-          <Text
-            style={[
-              styles.safetyText,
-              { color: log.safetyRating === 'SAFE' ? '#065F46' : '#991B1B' },
-            ]}
-          >
-            Safety Rating: {log.safetyRating}
-          </Text>
-        </View>
-      </View>
-
-      {/* ── Defect Findings ── */}
-      <Text style={styles.sectionTitle}>Automated Defect Vision Findings</Text>
-      <View style={styles.card}>
-        <Text style={styles.defectSummaryText}>{log.detectedDefectsSummary}</Text>
-        <Text style={styles.remedyCountText}>
-          Actionable Remediation Count: {log.remediationCount} Step(s)
-        </Text>
-      </View>
-
-      {/* ── Actions ── */}
-      <TouchableOpacity
-        style={styles.profileBtn}
-        onPress={() => router.push(`/species/${log.speciesId}`)}
-        activeOpacity={0.85}
-      >
-        <Ionicons name="book-outline" size={18} color="#FFFFFF" />
-        <Text style={styles.profileBtnText}>View Full Species Profile & Products</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.deleteBtn}
-        onPress={handleDelete}
-        activeOpacity={0.85}
-      >
-        <Ionicons name="trash-outline" size={18} color="#DC2626" />
-        <Text style={styles.deleteBtnText}>Delete This Inspection Log</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
+  return <AppScreen>
+    <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>SAVED OFFLINE RESULT</Text>
+    <Text style={[styles.title, { color: theme.colors.text }]}>{species.commonName.replace(' (Coco Lumber)', '')}</Text>
+    <Text style={[styles.botanical, { color: theme.colors.textMuted }]}>{species.botanicalName}</Text>
+    {log.imageUri && <Image source={{ uri: log.imageUri }} style={[styles.image, { backgroundColor: theme.colors.surfaceMuted }]} />}
+    <View style={[styles.result, { backgroundColor: theme.colors.surfaceStrong }]}><Text style={[styles.resultLabel, { color: theme.colors.accent }]}>CLASSIFICATION CONFIDENCE</Text><Text style={[styles.resultValue, { color: theme.colors.textOnStrong }]}>{Math.round(log.confidence * 100)}%</Text><Text style={styles.resultText}>Saved {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(log.timestamp))}</Text></View>
+    <View style={[styles.note, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}><Ionicons name="information-circle-outline" size={20} color={theme.colors.primary} /><Text style={[styles.noteText, { color: theme.colors.textMuted }]}>This is a local species-classification record. It does not evaluate defects, wood grade, safety, or construction suitability.</Text></View>
+    <TouchableOpacity accessibilityRole="button" onPress={() => router.navigate(`/species/${species.id}`)} style={[styles.reference, { backgroundColor: theme.colors.primarySoft }]}><Ionicons name="book-outline" size={19} color={theme.colors.primary} /><Text style={[styles.referenceText, { color: theme.colors.text }]}>Open species reference</Text><Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} /></TouchableOpacity>
+    <TouchableOpacity accessibilityRole="button" onPress={removeRecord} style={[styles.delete, { borderColor: theme.colors.border }]}><Ionicons name="trash-outline" size={18} color={theme.colors.danger} /><Text style={[styles.deleteText, { color: theme.colors.danger }]}>Delete saved scan</Text></TouchableOpacity>
+  </AppScreen>;
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F4F8F5',
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 40,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 16,
-    shadowColor: '#1B4332',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 14,
-  },
-  speciesName: {
-    color: '#1B4332',
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  botanicalName: {
-    color: '#52796F',
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginTop: 2,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 14,
-    flexWrap: 'wrap',
-  },
-  metaBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#F4F8F5',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E2EEE9',
-  },
-  metaBadgeText: {
-    color: '#065F46',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  metaText: {
-    color: '#52796F',
-    fontSize: 12,
-  },
-  safetyBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#EEF9F4',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#B7E4CC',
-  },
-  safetyText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1B4332',
-    marginBottom: 10,
-  },
-  defectSummaryText: {
-    color: '#1B4332',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  remedyCountText: {
-    color: '#52796F',
-    fontSize: 12,
-  },
-  profileBtn: {
-    backgroundColor: '#1B4332',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 14,
-    gap: 8,
-    marginBottom: 10,
-  },
-  profileBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  deleteBtn: {
-    backgroundColor: '#FEF2F2',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 14,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#FECACA',
-  },
-  deleteBtnText: {
-    color: '#DC2626',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-    backgroundColor: '#F4F8F5',
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#1B4332',
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  errorSub: {
-    color: '#52796F',
-    fontSize: 13,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  backBtn: {
-    backgroundColor: '#2D6A4F',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  backBtnText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-  },
+  eyebrow: { fontSize: typeScale.eyebrow, fontWeight: '900', letterSpacing: 1.3 }, title: { fontSize: typeScale.display, fontWeight: '900', letterSpacing: -1.1, marginTop: 7 }, botanical: { fontSize: 14, fontStyle: 'italic', marginTop: 5 }, image: { borderRadius: radius.lg, height: 240, marginTop: space.lg, width: '100%' }, result: { borderRadius: radius.lg, marginTop: space.md, padding: space.lg }, resultLabel: { fontSize: 11, fontWeight: '900', letterSpacing: 1.1 }, resultValue: { fontSize: 42, fontWeight: '900', letterSpacing: -1.6, marginTop: 5 }, resultText: { color: '#DCE8DE', fontSize: 12, lineHeight: 18, marginTop: 4 }, note: { alignItems: 'flex-start', borderRadius: radius.md, borderWidth: 1, flexDirection: 'row', gap: 10, marginTop: space.md, padding: 14 }, noteText: { flex: 1, fontSize: 12, lineHeight: 18 }, reference: { alignItems: 'center', borderRadius: radius.md, flexDirection: 'row', gap: 10, marginTop: space.lg, minHeight: 56, paddingHorizontal: 15 }, referenceText: { flex: 1, fontSize: 14, fontWeight: '900' }, delete: { alignItems: 'center', borderRadius: radius.md, borderWidth: 1, flexDirection: 'row', gap: 8, justifyContent: 'center', marginTop: space.sm, minHeight: 54 }, deleteText: { fontSize: 14, fontWeight: '900' },
+  missing: { alignItems: 'center', flexGrow: 1, justifyContent: 'center' }, missingIcon: { alignItems: 'center', borderRadius: radius.pill, height: 58, justifyContent: 'center', width: 58 }, missingTitle: { fontSize: 20, fontWeight: '900', marginTop: 14 }, missingText: { fontSize: 14, lineHeight: 20, marginTop: 6, textAlign: 'center' }, back: { borderRadius: radius.md, marginTop: 18, paddingHorizontal: 20, paddingVertical: 12 }, backText: { fontSize: 14, fontWeight: '900' },
 });

@@ -1,0 +1,3 @@
+# Keep packaged runtime model artifacts byte-for-byte intact.
+*.onnx binary
+*.data binary

@@ -1,56 +1,52 @@
 // LumbrScan Scan & Preprocessing Zustand Store
 
 import { create } from 'zustand';
-import { ModalityType, PredictionResponse } from '../types';
-import { mockApiClient } from '../services/mockApiClient';
+import type { OfflineSpeciesPrediction } from '../types/offlineInference';
 
 export interface ScanStoreState {
   imageUri: string | null;
   croppedUri: string | null;
-  modalityType: ModalityType;
   isProcessing: boolean;
-  activeResult: PredictionResponse | null;
-  scanHistory: PredictionResponse[];
+  activeResult: OfflineSpeciesPrediction | null;
 
   // Actions
   setImageUri: (uri: string | null) => void;
   setCroppedUri: (uri: string | null) => void;
-  setModalityType: (modality: ModalityType) => void;
-  runInference: (conditionFlags: any) => Promise<PredictionResponse>;
+  runInference: () => Promise<OfflineSpeciesPrediction>;
   resetScan: () => void;
 }
 
 export const useScanStore = create<ScanStoreState>((set, get) => ({
   imageUri: null,
   croppedUri: null,
-  modalityType: 'TRANSVERSAL_CROSS_SECTION',
   isProcessing: false,
   activeResult: null,
-  scanHistory: [],
 
   setImageUri: (uri) => set({ imageUri: uri }),
   setCroppedUri: (uri) => set({ croppedUri: uri }),
-  setModalityType: (modality) => set({ modalityType: modality }),
-
-  runInference: async (conditionFlags) => {
+  runInference: async () => {
     set({ isProcessing: true });
     try {
-      const payload = {
-        imageUri: get().croppedUri || get().imageUri || 'mock_timber_image.jpg',
-        modalityType: get().modalityType,
-        conditionAssessment: conditionFlags,
-      };
+      const imageUri = get().croppedUri || get().imageUri;
+      if (!imageUri) {
+        throw new Error('Capture or select one clear end-grain photo before scanning.');
+      }
+      // Metro's runtime require defers the native ONNX module until the user
+      // begins a scan, keeping the route available if a development build is
+      // temporarily out of sync with its native dependencies.
+      const { offlineSpeciesClassifier } = require('../services/offlineSpeciesClassifier.native') as typeof import('../services/offlineSpeciesClassifier.native');
+      const result = await offlineSpeciesClassifier.classify(imageUri);
 
-      const result = await mockApiClient.predictSpecies(payload);
-
-      set((state) => ({
+      set({
         isProcessing: false,
         activeResult: result,
-        scanHistory: [result, ...state.scanHistory],
-      }));
+      });
 
       return result;
     } catch (error) {
+      // Keep the user-facing alert concise while preserving the native error
+      // in Android diagnostics for device-specific troubleshooting.
+      console.error('[LumbrScan] Offline species scan failed.', error);
       set({ isProcessing: false });
       throw error;
     }

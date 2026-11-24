@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },
@@ -36,7 +36,9 @@
           "photosPermission": "LumbrScan needs access to your photo library to select timber images for species identification.",
           "cameraPermission": "LumbrScan needs access to your camera to capture timber images for species identification."
         }
-      ]
+      ],
+      "expo-asset",
+      "onnxruntime-react-native"
     ],
     "extra": {
       "router": {},

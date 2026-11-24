@@ -1,31 +1,31 @@
 // LumbrScan Root Layout — TripGlide Soft Light Theme
 
 import React from 'react';
-import { Stack, Redirect } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useOnboardingStore } from '../stores/useOnboardingStore';
+import { useAppTheme } from '../hooks/useAppTheme';
 
 export default function RootLayout() {
-  const hasCompletedOnboarding = useOnboardingStore((state) => state.hasCompletedOnboarding);
+  const theme = useAppTheme();
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: theme.colors.surface,
           },
-          headerTintColor: '#1A1D1F',
+          headerTintColor: theme.colors.text,
           headerTitleStyle: {
             fontWeight: '800',
             fontSize: 17,
-            color: '#1A1D1F',
+            color: theme.colors.text,
           },
           headerShadowVisible: false,
           contentStyle: {
-            backgroundColor: '#F4F6F8',
+            backgroundColor: theme.colors.canvas,
           },
         }}
       >
@@ -34,14 +34,14 @@ export default function RootLayout() {
         <Stack.Screen
           name="species/[id]"
           options={{
-            title: 'Species Profile & Compliance',
+            title: 'Species reference',
             headerBackTitle: 'Back',
           }}
         />
         <Stack.Screen
           name="history/[id]"
           options={{
-            title: 'Inspection History Log',
+            title: 'Scan history',
             headerBackTitle: 'Back',
           }}
         />

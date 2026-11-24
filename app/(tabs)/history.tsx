@@ -1,335 +1,83 @@
-// LumbrScan Dedicated Scan History Logs Screen
-// TripGlide Light & Dark Pill Aesthetic
-
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-} from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { AppScreen } from '../../components/ui/AppScreen';
+import { radius, space, typeScale } from '../../constants/appTheme';
+import { SPECIES_DICTIONARY } from '../../constants/domain';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import { useHistoryStore } from '../../stores/useHistoryStore';
-import { FprdiBadge } from '../../components/ui/FprdiBadge';
+
+function formatDate(timestamp: string) {
+  return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(timestamp));
+}
 
 export default function HistoryScreen() {
-  const insets = useSafeAreaInsets();
+  const theme = useAppTheme();
   const router = useRouter();
+  const logs = useHistoryStore((state) => state.logs);
+  const clearAllLogs = useHistoryStore((state) => state.clearAllLogs);
+  const [query, setQuery] = useState('');
 
-  const { logs, deleteLog, clearAllLogs } = useHistoryStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const filteredLogs = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return logs;
+    return logs.filter((log) => {
+      const species = SPECIES_DICTIONARY[log.speciesId];
+      return `${species.commonName} ${species.botanicalName}`.toLowerCase().includes(normalizedQuery);
+    });
+  }, [logs, query]);
 
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.commonName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.botanicalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.detectedDefectsSummary.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleClearAll = () => {
-    Alert.alert(
-      'Clear History',
-      'Are you sure you want to delete all saved scan logs? This action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear All', style: 'destructive', onPress: clearAllLogs },
-      ]
-    );
-  };
+  const confirmClear = () => Alert.alert('Clear local history?', 'This removes saved scan entries from this device. It does not remove any source images.', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Clear history', style: 'destructive', onPress: clearAllLogs },
+  ]);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: insets.top + 16, paddingBottom: 120 },
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* ── Page Header ── */}
-      <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.pageTitle}>Scan History</Text>
-          <Text style={styles.pageSubtitle}>{logs.length} saved inspection logs</Text>
+    <AppScreen>
+      <View style={styles.headingRow}>
+        <View style={styles.headingCopy}>
+          <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>ON THIS DEVICE</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>Scan history</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>{logs.length} saved species-classification {logs.length === 1 ? 'record' : 'records'}.</Text>
         </View>
-        {logs.length > 0 && (
-          <TouchableOpacity
-            style={styles.clearBtn}
-            onPress={handleClearAll}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="trash-outline" size={18} color="#DC2626" />
-          </TouchableOpacity>
-        )}
+        {logs.length > 0 && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Clear history" onPress={confirmClear} style={[styles.clearButton, { backgroundColor: theme.colors.warningSoft }]}><Ionicons name="trash-outline" size={19} color={theme.colors.danger} /></TouchableOpacity>}
       </View>
 
-      {/* ── Search Bar ── */}
-      <View style={styles.searchBox}>
-        <Ionicons name="search-outline" size={18} color="#6B7280" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search history by species or defect..."
-          placeholderTextColor="#9CA3AF"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={16} color="#9CA3AF" />
-          </TouchableOpacity>
-        )}
+      <View style={[styles.search, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <Ionicons name="search-outline" size={18} color={theme.colors.textMuted} />
+        <TextInput accessibilityLabel="Search scan history" value={query} onChangeText={setQuery} placeholder="Search by species" placeholderTextColor={theme.colors.textMuted} style={[styles.searchInput, { color: theme.colors.text }]} />
+        {query.length > 0 && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Clear search" onPress={() => setQuery('')}><Ionicons name="close-circle" size={18} color={theme.colors.textMuted} /></TouchableOpacity>}
       </View>
 
-      {/* ── Logs List ── */}
-      {filteredLogs.map((log) => {
-        const dateStr = new Date(log.timestamp).toLocaleDateString(undefined, {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-
-        return (
-          <TouchableOpacity
-            key={log.id}
-            style={styles.logCard}
-            onPress={() => router.push(`/species/${log.speciesId}`)}
-            activeOpacity={0.85}
-          >
-            <View style={styles.logHeader}>
-              <View style={styles.logHeaderLeft}>
-                <Text style={styles.speciesName}>{log.commonName}</Text>
-                <Text style={styles.botanicalName}>{log.botanicalName}</Text>
-              </View>
-              <FprdiBadge groupCode={log.effectiveFprdiGroup} size="sm" />
-            </View>
-
-            <View style={styles.metaRow}>
-              <View style={styles.metaBadge}>
-                <Ionicons name="sparkles" size={12} color="#10B981" />
-                <Text style={styles.metaBadgeText}>
-                  {Math.round(log.confidenceScore * 100)}% Match
-                </Text>
-              </View>
-
-              <View style={styles.metaBadge}>
-                <Ionicons name="calendar-outline" size={12} color="#6B7280" />
-                <Text style={styles.metaText}>{dateStr}</Text>
-              </View>
-
-              <View
-                style={[
-                  styles.safetyPill,
-                  {
-                    backgroundColor:
-                      log.safetyRating === 'SAFE' ? '#ECFDF5' : '#FEF2F2',
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.safetyPillText,
-                    {
-                      color:
-                        log.safetyRating === 'SAFE' ? '#065F46' : '#991B1B',
-                    },
-                  ]}
-                >
-                  {log.safetyRating}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.defectText} numberOfLines={2}>
-              🔍 {log.detectedDefectsSummary}
-            </Text>
-
-            <View style={styles.cardFooter}>
-              <Text style={styles.remedyText}>
-                {log.remediationCount} Actionable Remediation Step(s)
-              </Text>
-              <TouchableOpacity
-                onPress={() => deleteLog(log.id)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Ionicons name="trash-outline" size={16} color="#9CA3AF" />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        );
+      {filteredLogs.length === 0 ? (
+        <View style={[styles.empty, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          <View style={[styles.emptyIcon, { backgroundColor: theme.colors.primarySoft }]}><Ionicons name="time-outline" size={28} color={theme.colors.primary} /></View>
+          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{logs.length === 0 ? 'No saved scans yet' : 'No matching scans'}</Text>
+          <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>{logs.length === 0 ? 'Accepted offline species classifications will stay here on this device.' : 'Try a different species name.'}</Text>
+          {logs.length === 0 && <TouchableOpacity accessibilityRole="button" onPress={() => router.navigate('/(tabs)/scan')} style={[styles.emptyAction, { backgroundColor: theme.colors.primary }]}><Text style={[styles.emptyActionText, { color: theme.colors.textOnStrong }]}>Go to scan</Text></TouchableOpacity>}
+        </View>
+      ) : filteredLogs.map((log) => {
+        const species = SPECIES_DICTIONARY[log.speciesId];
+        return <TouchableOpacity key={log.id} accessibilityRole="button" onPress={() => router.navigate(`/history/${log.id}`)} style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          {log.imageUri ? <Image source={{ uri: log.imageUri }} style={[styles.thumbnail, { backgroundColor: theme.colors.surfaceMuted }]} /> : <View style={[styles.thumbnail, { alignItems: 'center', backgroundColor: theme.colors.primarySoft, justifyContent: 'center' }]}><Ionicons name="image-outline" size={22} color={theme.colors.primary} /></View>}
+          <View style={styles.cardCopy}>
+            <Text style={[styles.speciesName, { color: theme.colors.text }]}>{species.commonName.replace(' (Coco Lumber)', '')}</Text>
+            <Text style={[styles.botanical, { color: theme.colors.textMuted }]}>{species.botanicalName}</Text>
+            <View style={styles.metaRow}><Text style={[styles.confidence, { color: theme.colors.primary }]}>{Math.round(log.confidence * 100)}% confidence</Text><Text style={[styles.meta, { color: theme.colors.textMuted }]}>{formatDate(log.timestamp)}</Text></View>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={theme.colors.textMuted} />
+        </TouchableOpacity>;
       })}
 
-      {filteredLogs.length === 0 && (
-        <View style={styles.emptyState}>
-          <Ionicons name="time-outline" size={48} color="#9CA3AF" />
-          <Text style={styles.emptyTitle}>No history logs found</Text>
-          <Text style={styles.emptySub}>
-            Past timber classification and condition scans will appear here.
-          </Text>
-        </View>
-      )}
-    </ScrollView>
+      <Text style={[styles.disclaimer, { color: theme.colors.textMuted }]}>History records a species-classification result only. It is not an inspection, grading, or safety record.</Text>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F4F6F8',
-  },
-  content: {
-    paddingHorizontal: 20,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#1A1D1F',
-    letterSpacing: -0.3,
-    marginBottom: 4,
-  },
-  pageSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  clearBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FEF2F2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#FECACA',
-  },
-  searchBox: {
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 24,
-    gap: 10,
-    marginBottom: 16,
-    shadowColor: '#1A1D1F',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  searchInput: {
-    flex: 1,
-    color: '#1A1D1F',
-    fontSize: 14,
-  },
-  logCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#1A1D1F',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  logHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  logHeaderLeft: {
-    flex: 1,
-    marginRight: 10,
-  },
-  speciesName: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1A1D1F',
-  },
-  botanicalName: {
-    fontSize: 12,
-    color: '#10B981',
-    fontStyle: 'italic',
-    marginTop: 1,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-    flexWrap: 'wrap',
-  },
-  metaBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  metaBadgeText: {
-    color: '#10B981',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  metaText: {
-    color: '#6B7280',
-    fontSize: 11,
-  },
-  safetyPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  safetyPillText: {
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  defectText: {
-    color: '#4B5563',
-    fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 10,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  remedyText: {
-    color: '#10B981',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 48,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1A1D1F',
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  emptySub: {
-    fontSize: 13,
-    color: '#6B7280',
-    textAlign: 'center',
-  },
+  headingRow: { alignItems: 'flex-start', flexDirection: 'row', gap: space.sm, justifyContent: 'space-between' }, headingCopy: { flex: 1 }, eyebrow: { fontSize: typeScale.eyebrow, fontWeight: '900', letterSpacing: 1.3 }, title: { fontSize: typeScale.display, fontWeight: '900', letterSpacing: -1.1, marginTop: 7 }, subtitle: { fontSize: 15, lineHeight: 21, marginTop: 8 }, clearButton: { alignItems: 'center', borderRadius: radius.pill, height: 42, justifyContent: 'center', width: 42 },
+  search: { alignItems: 'center', borderRadius: radius.md, borderWidth: 1, flexDirection: 'row', gap: 9, marginTop: space.lg, minHeight: 54, paddingHorizontal: 14 }, searchInput: { flex: 1, fontSize: 14 },
+  empty: { alignItems: 'center', borderRadius: radius.lg, borderWidth: 1, marginTop: space.lg, padding: space.xl }, emptyIcon: { alignItems: 'center', borderRadius: radius.pill, height: 58, justifyContent: 'center', width: 58 }, emptyTitle: { fontSize: 18, fontWeight: '900', marginTop: 14 }, emptyText: { fontSize: 14, lineHeight: 20, marginTop: 6, textAlign: 'center' }, emptyAction: { borderRadius: radius.md, marginTop: 18, paddingHorizontal: 20, paddingVertical: 12 }, emptyActionText: { fontSize: 14, fontWeight: '900' },
+  card: { alignItems: 'center', borderRadius: radius.md, borderWidth: 1, flexDirection: 'row', gap: 12, marginTop: space.sm, minHeight: 94, padding: 10 }, thumbnail: { borderRadius: 12, height: 72, width: 72 }, cardCopy: { flex: 1 }, speciesName: { fontSize: 16, fontWeight: '900' }, botanical: { fontSize: 12, fontStyle: 'italic', marginTop: 3 }, metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }, confidence: { fontSize: 12, fontWeight: '900' }, meta: { fontSize: 12 }, disclaimer: { fontSize: 12, lineHeight: 18, marginTop: space.lg, textAlign: 'center' },
 });
