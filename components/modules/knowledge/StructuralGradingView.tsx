@@ -268,7 +268,7 @@ export function StructuralGradingView() {
                 <View
                   style={[styles.woodMark, { backgroundColor: item.colorHex }]}
                 >
-                  <Ionicons name="layers-outline" size={20} color="#FFFFFF" />
+                  <Ionicons name="leaf-outline" size={20} color="#FFFFFF" />
                 </View>
                 <View style={styles.cardCopy}>
                   <Text
