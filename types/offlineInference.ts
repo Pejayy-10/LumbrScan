@@ -14,7 +14,7 @@ export interface OfflineSpeciesPrediction {
   ranking: OfflineSpeciesRanking[];
   threshold: number;
   processingTimeMs: number;
-  modelId: 'one_photo_cross_section_prototype_2026-11-14_opset18';
+  modelId: 'paired_fusion_prototype_2026_11_25';
 }
 
 export interface OfflineScanLog {

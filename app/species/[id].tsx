@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AppScreen } from '../../components/ui/AppScreen';
+import { DenrStatusCard } from '../../components/ui/DenrStatusCard';
 import { radius, space, typeScale } from '../../constants/appTheme';
 import { SUPPORTED_SPECIES, SUPPORTED_SPECIES_IDS } from '../../constants/supportedSpecies';
 import { useAppTheme } from '../../hooks/useAppTheme';
@@ -41,13 +42,16 @@ export default function SpeciesDetailScreen() {
         <Text style={[styles.body, { color: theme.colors.textMuted }]}>For early budgeting only. Confirm current price, quality, and available dimensions directly with a supplier.</Text>
       </View>
 
+      <DenrStatusCard speciesId={requestedUnsupportedSpecies ? undefined : species.id} />
+
       <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
         <View style={styles.cardHeading}><View style={[styles.icon, { backgroundColor: theme.colors.primarySoft }]}><Ionicons name="scan-outline" size={18} color={theme.colors.primary} /></View><Text style={[styles.cardTitle, { color: theme.colors.text }]}>How this prototype scans</Text></View>
-        <Text style={[styles.body, { color: theme.colors.textMuted }]}>The offline model is trained for one clear, close cross-section or end-grain photo. It identifies only the three supported species and cannot grade a board, assess defects, or certify suitability.</Text>
+        <Text style={[styles.body, { color: theme.colors.textMuted }]}>The offline prototype uses an end-grain photo and a wood-grain photo of the same board. It identifies only the three supported species and cannot grade a board, assess defects, or certify suitability.</Text>
       </View>
 
-      <TouchableOpacity accessibilityRole="button" onPress={() => router.navigate('/estimator')} style={[styles.action, { backgroundColor: theme.colors.primary }]}><Ionicons name="calculator-outline" size={19} color={theme.colors.textOnStrong} /><Text style={[styles.actionText, { color: theme.colors.textOnStrong }]}>Use the price estimator</Text><Ionicons name="chevron-forward" size={18} color={theme.colors.textOnStrong} /></TouchableOpacity>
-      <TouchableOpacity accessibilityRole="button" onPress={() => router.navigate('/(tabs)/scan')} style={[styles.secondaryAction, { borderColor: theme.colors.border }]}><Ionicons name="camera-outline" size={19} color={theme.colors.primary} /><Text style={[styles.secondaryActionText, { color: theme.colors.text }]}>Scan a clear end grain</Text></TouchableOpacity>
+      <TouchableOpacity accessibilityRole="button" onPress={() => router.push({ pathname: '/recommend', params: { species: species.id } })} style={[styles.action, { backgroundColor: theme.colors.primary }]}><Ionicons name="library-outline" size={19} color={theme.colors.textOnStrong} /><Text style={[styles.actionText, { color: theme.colors.textOnStrong }]}>Explore documented uses</Text><Ionicons name="chevron-forward" size={18} color={theme.colors.textOnStrong} /></TouchableOpacity>
+      <TouchableOpacity accessibilityRole="button" onPress={() => router.push({ pathname: '/estimator', params: { species: species.id } })} style={[styles.secondaryAction, { borderColor: theme.colors.border }]}><Ionicons name="calculator-outline" size={19} color={theme.colors.primary} /><Text style={[styles.secondaryActionText, { color: theme.colors.text }]}>Use the price estimator</Text></TouchableOpacity>
+      <TouchableOpacity accessibilityRole="button" onPress={() => router.navigate('/(tabs)/scan')} style={[styles.secondaryAction, { borderColor: theme.colors.border }]}><Ionicons name="camera-outline" size={19} color={theme.colors.primary} /><Text style={[styles.secondaryActionText, { color: theme.colors.text }]}>Scan a board</Text></TouchableOpacity>
     </AppScreen>
   );
 }

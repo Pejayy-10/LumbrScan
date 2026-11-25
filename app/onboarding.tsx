@@ -19,10 +19,10 @@ export default function OnboardingScreen() {
         <View style={[styles.brandMark, { backgroundColor: theme.colors.surfaceStrong }]}><Ionicons name="leaf-outline" size={36} color={theme.colors.accent} /></View>
         <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>LUMBRSCAN</Text>
         <Text style={[styles.title, { color: theme.colors.text }]}>Identify timber with a clearer field workflow.</Text>
-        <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>An offline prototype for Coconut, Gmelina, and Mango. Start with one clean end-grain photo.</Text>
+        <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>An offline prototype for Coconut, Gmelina, and Mango. Start with two clear views of the same board.</Text>
         <View style={styles.steps}>
           {[
-            ['1', 'Capture one board end', 'Keep the cut face square, clear, and well lit.'],
+            ['1', 'Capture two board views', 'Photograph the cut end and the long grain surface.'],
             ['2', 'Identify on-device', 'The prototype runs locally on Android.'],
             ['3', 'Review the reference', 'Browse the supported species and project price ranges.'],
           ].map(([number, title, detail]) => <View key={number} style={[styles.step, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}><View style={[styles.number, { backgroundColor: theme.colors.primarySoft }]}><Text style={[styles.numberText, { color: theme.colors.primary }]}>{number}</Text></View><View style={{ flex: 1 }}><Text style={[styles.stepTitle, { color: theme.colors.text }]}>{title}</Text><Text style={[styles.stepDetail, { color: theme.colors.textMuted }]}>{detail}</Text></View></View>)}

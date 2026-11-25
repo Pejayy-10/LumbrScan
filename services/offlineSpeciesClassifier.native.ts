@@ -9,9 +9,9 @@ import {
   OfflineSpeciesRanking,
 } from '../types/offlineInference';
 
-const MODEL_SOURCE = require('../assets/models/one_photo_cross_section_prototype_2026-11-14_opset18.onnx') as number;
-const MODEL_DATA_SOURCE = require('../assets/models/one_photo_cross_section_prototype_2026-11-14_opset18.onnx.data') as number;
-const MODEL_FILE_NAME = 'one_photo_cross_section_prototype_2026-11-14_opset18.onnx';
+const MODEL_SOURCE = require('../assets/models/paired_fusion_prototype_2026_11_25.onnx') as number;
+const MODEL_DATA_SOURCE = require('../assets/models/paired_fusion_prototype_2026_11_25.onnx.data') as number;
+const MODEL_FILE_NAME = 'paired_fusion_prototype_2026_11_25.onnx';
 const IMAGE_SIZE = 224;
 const MINIMUM_CONFIDENCE = 0.9;
 const IMAGENET_MEAN = [0.485, 0.456, 0.406] as const;
@@ -55,7 +55,10 @@ const loadSession = async (): Promise<ort.InferenceSession> => {
         executionProviders: ['cpu'],
         graphOptimizationLevel: 'all',
       });
-    })();
+    })().catch((error: unknown) => {
+      sessionPromise = null;
+      throw error;
+    });
   }
   return sessionPromise;
 };
@@ -86,10 +89,10 @@ const createInputTensor = async (imageUri: string): Promise<ort.Tensor> => {
 };
 
 export const offlineSpeciesClassifier = {
-  classify: async (imageUri: string): Promise<OfflineSpeciesPrediction> => {
+  classify: async (crossSectionUri: string, woodGrainUri: string): Promise<OfflineSpeciesPrediction> => {
     const startedAt = Date.now();
-    const [session, input] = await Promise.all([loadSession(), createInputTensor(imageUri)]);
-    const outputs = await session.run({ image: input });
+    const [session, crossSection, woodGrain] = await Promise.all([loadSession(), createInputTensor(crossSectionUri), createInputTensor(woodGrainUri)]);
+    const outputs = await session.run({ cross_section: crossSection, wood_grain: woodGrain });
     const logits = outputs.species?.data;
     if (!(logits instanceof Float32Array) || logits.length !== OFFLINE_SPECIES_IDS.length) {
       throw new Error('The on-device model returned an unexpected species output.');
@@ -99,7 +102,6 @@ export const offlineSpeciesClassifier = {
       .map((confidence, index) => ({ speciesId: OFFLINE_SPECIES_IDS[index], confidence }))
       .sort((left, right) => right.confidence - left.confidence);
     const primary = ranking[0];
-    console.info('[LumbrScan] Offline species ranking.', JSON.stringify(ranking));
     return {
       status: primary.confidence >= MINIMUM_CONFIDENCE ? 'accepted' : 'retake_required',
       predictedSpeciesId: primary.speciesId,
@@ -107,7 +109,7 @@ export const offlineSpeciesClassifier = {
       ranking,
       threshold: MINIMUM_CONFIDENCE,
       processingTimeMs: Date.now() - startedAt,
-      modelId: 'one_photo_cross_section_prototype_2026-11-14_opset18',
+      modelId: 'paired_fusion_prototype_2026_11_25',
     };
   },
 };

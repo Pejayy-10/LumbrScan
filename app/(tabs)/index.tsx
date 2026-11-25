@@ -38,10 +38,10 @@ export default function HomeScreen() {
           </View>
           <View style={styles.scanCopy}>
             <Text style={[styles.scanEyebrow, { color: theme.colors.accent }]}>OFFLINE SCAN</Text>
-            <Text style={[styles.scanTitle, { color: theme.colors.textOnStrong }]}>Identify one clear end grain</Text>
+            <Text style={[styles.scanTitle, { color: theme.colors.textOnStrong }]}>Identify one clear board</Text>
           </View>
         </View>
-        <Text style={[styles.scanText, { color: theme.isDark ? '#C9D7CD' : '#DCE8DE' }]}>Capture one isolated, face-on board end. The on-device model supports Coconut, Gmelina, and Mango.</Text>
+        <Text style={[styles.scanText, { color: theme.isDark ? '#C9D7CD' : '#DCE8DE' }]}>Capture the cut end and wood-grain surface of the same board. The prototype supports Coconut, Gmelina, and Mango.</Text>
         <AppButton label="Start a scan" icon="camera-outline" onPress={() => router.navigate('/(tabs)/scan')} style={{ marginTop: 18, backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }} />
       </View>
 
@@ -73,6 +73,11 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.utilityGrid}>
+        <TouchableOpacity onPress={() => router.navigate('/recommend')} style={[styles.utilityCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel="Explore documented timber uses">
+          <Ionicons name="library-outline" size={21} color={theme.colors.primary} />
+          <View style={styles.utilityCopy}><Text style={[styles.utilityTitle, { color: theme.colors.text }]}>Explore timber uses</Text><Text style={[styles.utilityText, { color: theme.colors.textMuted }]}>Find species by use, or uses by species</Text></View>
+          <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => router.navigate('/estimator')} style={[styles.utilityCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]} activeOpacity={0.82} accessibilityRole="button" accessibilityLabel="Open price estimator">
           <Ionicons name="calculator-outline" size={21} color={theme.colors.primary} />
           <View style={styles.utilityCopy}><Text style={[styles.utilityTitle, { color: theme.colors.text }]}>Price estimator</Text><Text style={[styles.utilityText, { color: theme.colors.textMuted }]}>Reference prices for the three supported species</Text></View>
