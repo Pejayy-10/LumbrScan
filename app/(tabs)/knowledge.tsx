@@ -47,7 +47,9 @@ export default function KnowledgeScreen() {
           REFERENCE CATALOG
         </Text>
         <Text style={[styles.title, { color: theme.colors.text }]}>
-          Three species, clearly scoped.
+          {view === "species"
+            ? "Three species, clearly scoped."
+            : "Structural grading."}
         </Text>
         <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
           {view === "species"
